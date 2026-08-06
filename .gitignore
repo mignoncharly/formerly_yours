@@ -45,3 +45,4 @@ yarn-error.log*
 # secret key material (provided locally, rotate at project end — never commit)
 docs/supabase_access.md
 docs/sentry_keys.md
+docs/supabase_sentry_keys.md
