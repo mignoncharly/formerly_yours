@@ -65,9 +65,166 @@ export type Database = {
         };
         Relationships: [];
       };
+      categories: {
+        Row: {
+          id: number;
+          parent_id: number | null;
+          slug: string;
+          name: string;
+          sort_order: number;
+          is_active: boolean;
+        };
+        Insert: {
+          id?: number;
+          parent_id?: number | null;
+          slug: string;
+          name: string;
+          sort_order?: number;
+          is_active?: boolean;
+        };
+        Update: {
+          id?: number;
+          parent_id?: number | null;
+          slug?: string;
+          name?: string;
+          sort_order?: number;
+          is_active?: boolean;
+        };
+        Relationships: [];
+      };
+      listings: {
+        Row: {
+          id: string;
+          seller_id: string;
+          category_id: number | null;
+          short_id: string;
+          title: string | null;
+          description: string | null;
+          brand: string | null;
+          model: string | null;
+          condition: Database["public"]["Enums"]["item_condition"] | null;
+          currency: string;
+          price_amount: number | null;
+          status: Database["public"]["Enums"]["listing_status"];
+          country_code: string | null;
+          city: string | null;
+          published_at: string | null;
+          sold_at: string | null;
+          created_at: string;
+          updated_at: string;
+          // generated tsvector column (read-only)
+          search_tsv: unknown | null;
+        };
+        Insert: {
+          id?: string;
+          seller_id: string;
+          category_id?: number | null;
+          short_id?: string;
+          title?: string | null;
+          description?: string | null;
+          brand?: string | null;
+          model?: string | null;
+          condition?: Database["public"]["Enums"]["item_condition"] | null;
+          currency?: string;
+          price_amount?: number | null;
+          status?: Database["public"]["Enums"]["listing_status"];
+          country_code?: string | null;
+          city?: string | null;
+          published_at?: string | null;
+          sold_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          seller_id?: string;
+          category_id?: number | null;
+          short_id?: string;
+          title?: string | null;
+          description?: string | null;
+          brand?: string | null;
+          model?: string | null;
+          condition?: Database["public"]["Enums"]["item_condition"] | null;
+          currency?: string;
+          price_amount?: number | null;
+          status?: Database["public"]["Enums"]["listing_status"];
+          country_code?: string | null;
+          city?: string | null;
+          published_at?: string | null;
+          sold_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      listing_images: {
+        Row: {
+          id: string;
+          listing_id: string;
+          storage_path: string;
+          sort_order: number;
+          moderation_status: Database["public"]["Enums"]["moderation_status"];
+          width: number | null;
+          height: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          listing_id: string;
+          storage_path: string;
+          sort_order?: number;
+          moderation_status?: Database["public"]["Enums"]["moderation_status"];
+          width?: number | null;
+          height?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          listing_id?: string;
+          storage_path?: string;
+          sort_order?: number;
+          moderation_status?: Database["public"]["Enums"]["moderation_status"];
+          width?: number | null;
+          height?: number | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      saved_listings: {
+        Row: {
+          user_id: string;
+          listing_id: string;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          listing_id: string;
+          created_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          listing_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      search_listings: {
+        Args: {
+          q?: string | null;
+          in_category?: number | null;
+          in_condition?: Database["public"]["Enums"]["item_condition"] | null;
+          min_price?: number | null;
+          max_price?: number | null;
+          in_country?: string | null;
+          lim?: number | null;
+          off?: number | null;
+        };
+        Returns: Database["public"]["Tables"]["listings"]["Row"][];
+      };
+    };
     Enums: {
       profile_intent: "sell" | "browse" | "both";
       listing_status:
@@ -131,3 +288,9 @@ export type Enums<T extends keyof Database["public"]["Enums"]> =
 
 export type Profile = Tables<"profiles">;
 export type ProfileIntent = Enums<"profile_intent">;
+export type Category = Tables<"categories">;
+export type Listing = Tables<"listings">;
+export type ListingImage = Tables<"listing_images">;
+export type SavedListing = Tables<"saved_listings">;
+export type ItemCondition = Enums<"item_condition">;
+export type ListingStatus = Enums<"listing_status">;

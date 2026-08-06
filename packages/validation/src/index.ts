@@ -81,3 +81,72 @@ export const profileUpdateSchema = z.object({
   countryCode: countryCodeSchema,
 });
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
+
+// ---------------------------------------------------------------------------
+// Listings / sell flow (§3.2–3.6). Money is handled in integer MINOR units
+// (69000 = 690,00 €) everywhere below — never floats.
+// ---------------------------------------------------------------------------
+export const listingTitleSchema = z
+  .string()
+  .trim()
+  .min(3, "Give your item a title (at least 3 characters).")
+  .max(80, "Keep the title under 80 characters.");
+
+// price in minor units: > 0, and a sane ceiling (1,000,000.00 €).
+export const priceMinorSchema = z
+  .number()
+  .int("Price must be a whole number of cents.")
+  .positive("Price must be greater than zero.")
+  .max(100_000_000, "That price looks too high.");
+
+const optionalText = (max: number) =>
+  z.string().trim().max(max).optional().or(z.literal(""));
+
+// Draft autosave — every step is optional so a half-finished listing can persist.
+export const listingDraftSchema = z.object({
+  title: listingTitleSchema.optional().or(z.literal("")),
+  categoryId: z.number().int().positive().optional(),
+  condition: itemConditionSchema.optional(),
+  brand: optionalText(80),
+  model: optionalText(80),
+  description: optionalText(2000),
+  priceMinor: priceMinorSchema.optional(),
+  countryCode: countryCodeSchema.optional(),
+  city: optionalText(80),
+});
+export type ListingDraftInput = z.infer<typeof listingDraftSchema>;
+
+// Publish — the core fields the DB CHECK (listings_publishable_chk) requires.
+export const listingPublishSchema = z.object({
+  title: listingTitleSchema,
+  categoryId: z.number().int().positive("Pick a category."),
+  condition: itemConditionSchema,
+  brand: optionalText(80),
+  model: optionalText(80),
+  description: optionalText(2000),
+  priceMinor: priceMinorSchema,
+  countryCode: countryCodeSchema.optional(),
+  city: optionalText(80),
+});
+export type ListingPublishInput = z.infer<typeof listingPublishSchema>;
+
+// Parse a human-typed price ("690", "690,00", "690.5", "1 299,99") into minor
+// units. Returns null when it isn't a valid positive amount. Shared by the
+// sell form and the server action so both agree on the conversion.
+export function parsePriceToMinor(input: string): number | null {
+  const cleaned = input.trim().replace(/\s/g, "").replace(",", ".");
+  if (!/^\d+(\.\d{1,2})?$/.test(cleaned)) return null;
+  const minor = Math.round(Number(cleaned) * 100);
+  return Number.isFinite(minor) && minor > 0 ? minor : null;
+}
+
+export const listingSearchSchema = z.object({
+  q: z.string().trim().max(120).optional(),
+  categoryId: z.coerce.number().int().positive().optional(),
+  condition: itemConditionSchema.optional(),
+  minPrice: z.coerce.number().int().nonnegative().optional(),
+  maxPrice: z.coerce.number().int().positive().optional(),
+  countryCode: countryCodeSchema.optional(),
+  page: z.coerce.number().int().min(1).max(1000).default(1),
+});
+export type ListingSearchInput = z.infer<typeof listingSearchSchema>;
