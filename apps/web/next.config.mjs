@@ -1,5 +1,6 @@
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { withSentryConfig } from "@sentry/nextjs";
 
 // Monorepo root (…/apps/web -> repo root). fileURLToPath decodes spaces in the
 // path correctly (important on Windows where the folder name contains a space).
@@ -17,4 +18,15 @@ const nextConfig = {
   transpilePackages: ["@owy/types", "@owy/validation", "@owy/database"],
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  // Quiet during local builds, verbose in CI.
+  silent: !process.env.CI,
+  telemetry: false,
+  // Source-map upload is disabled for now (avoids the @sentry/cli binary under
+  // Turbopack). Enable later by setting this to a config object + SENTRY_AUTH_TOKEN.
+  sourcemaps: { disable: true },
+  // Tunnel Sentry requests through the app to dodge ad-blockers.
+  tunnelRoute: "/monitoring",
+});

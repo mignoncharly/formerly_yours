@@ -41,3 +41,7 @@ yarn-error.log*
 
 # local Claude Code settings
 .claude/settings.local.json
+
+# secret key material (provided locally, rotate at project end — never commit)
+docs/supabase_access.md
+docs/sentry_keys.md

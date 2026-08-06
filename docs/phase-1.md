@@ -65,25 +65,40 @@ phases that need them (plan §12.2 explicitly allows this).
 | design system initial | ✅ |
 | PWA installable | ✅ |
 | aucun secret exposé | ✅ (env split + `server-only` + gitignore) |
-| migrations fonctionnelles | ✅ code/pipeline · 🟡 apply needs a linked project |
-| Supabase connecté | 🟡 client code ready · needs cloud project + keys |
-| staging | 🟡 needs Supabase staging + first VPS deploy |
-| monitoring technique initial | 🟡 Sentry env placeholder; SDK deferred |
+| migrations fonctionnelles | ✅ applied to cloud DB (`0001`, `0002`) via `pnpm db:migrate` |
+| Supabase connecté | ✅ dev project wired + DB reachable/verified |
+| monitoring technique initial | ✅ `@sentry/nextjs` wired (runtime) · 🟡 awaiting DSN to emit |
+| staging | 🟡 needs the first VPS deploy |
 
-Verified locally: `pnpm build` ✅ and `pnpm typecheck` (all packages) ✅.
+Verified: `pnpm build` ✅ (Sentry + Turbopack) and `pnpm typecheck` (all packages) ✅.
+
+### Supabase & Sentry setup notes
+
+- **Secrets** live only in git-ignored files (`docs/supabase_access.md`,
+  `docs/sentry_keys.md`, `apps/web/.env.local`). Read by tooling, never printed
+  or committed. Rotate at project end by replacing those files.
+- **Migrations** applied Docker-less by `scripts/db-migrate.mjs`
+  (`pnpm db:migrate`) over a direct Postgres connection, recording versions in
+  `supabase_migrations.schema_migrations` so the Supabase CLI stays consistent.
+  Applied: extensions (pgcrypto, pg_trgm, citext, moddatetime) + all 10 enums.
+- **Sentry**: `instrumentation.ts` (+ server/edge configs),
+  `instrumentation-client.ts`, `global-error.tsx`, `withSentryConfig`. Runtime
+  capture activates once `NEXT_PUBLIC_SENTRY_DSN` is set; source-map upload is
+  intentionally off for now (avoids `@sentry/cli` under Turbopack), with
+  `SENTRY_AUTH_TOKEN`/`ORG`/`PROJECT` already in env to switch on later.
 
 ## What needs you (to fully close Phase 1)
 
-1. **Create Supabase projects** (dev first; staging/prod later). Paste
-   `NEXT_PUBLIC_SUPABASE_URL`, `..._PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` into
-   `apps/web/.env.local`.
-2. **Link + push migrations:** `supabase link --project-ref <ref>` then
-   `pnpm db:push`; regenerate types into `packages/database/src/types.ts`.
-3. **Deploy to the VPS** at `oncewasyours.gestionatech.de` — follow
+1. **Sentry DSN** — the only missing piece for live error reporting. The org
+   token you gave is scoped for releases (can't read the DSN via API). Add a line
+   `dsn=https://…@…ingest.…sentry.io/…` to `docs/sentry_keys.md` (git-ignored) and
+   I'll wire it in; or paste it and I'll store it. Find it in Sentry →
+   Settings → Projects → oncewasyours → Client Keys (DSN).
+2. **Deploy to the VPS** at `oncewasyours.gestionatech.de` — follow
    [`docs/deployment.md`](deployment.md) (DNS A record + systemd + nginx + certbot).
-4. **GitHub secrets** for CI/CD as needed (none required for the current build job).
-5. **Sentry** (optional now): create a project, add the DSN, then we wire
-   `@sentry/nextjs`.
+   This turns "staging" green.
+3. Later: separate Supabase **staging/production** projects (the current one is
+   development); GitHub secrets if CI needs them.
 
 ## Next: Phase 2 — Auth + Identity + Security
 
