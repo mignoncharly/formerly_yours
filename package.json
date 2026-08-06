@@ -15,6 +15,7 @@
     "clean": "turbo run clean && rimraf node_modules",
     "web:dev": "pnpm --filter @owy/web dev",
     "web:build": "pnpm --filter @owy/web build",
+    "test:security": "node --test 'tests/security/*.test.mjs'",
     "db:migrate": "node scripts/db-migrate.mjs",
     "db:push": "supabase db push",
     "db:diff": "supabase db diff",
