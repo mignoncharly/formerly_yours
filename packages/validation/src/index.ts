@@ -70,3 +70,14 @@ export const onboardingSchema = z.object({
   avatarPath: z.string().trim().max(512).optional(),
 });
 export type OnboardingInput = z.infer<typeof onboardingSchema>;
+
+// Editable profile fields (§ account page). Only public-safe fields — never
+// email/phone/address/DOB/KYC (§2.4).
+export const profileUpdateSchema = z.object({
+  username: usernameSchema,
+  displayName: z.string().trim().max(60).optional().or(z.literal("")),
+  bio: z.string().trim().max(280).optional().or(z.literal("")),
+  city: z.string().trim().max(80).optional().or(z.literal("")),
+  countryCode: countryCodeSchema,
+});
+export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;

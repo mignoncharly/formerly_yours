@@ -25,6 +25,7 @@ export type Database = {
           city: string | null;
           onboarded_at: string | null;
           signup_intent: Database["public"]["Enums"]["profile_intent"] | null;
+          deactivated_at: string | null;
           is_verified: boolean;
           is_suspended: boolean;
           created_at: string;
@@ -40,6 +41,7 @@ export type Database = {
           city?: string | null;
           onboarded_at?: string | null;
           signup_intent?: Database["public"]["Enums"]["profile_intent"] | null;
+          deactivated_at?: string | null;
           is_verified?: boolean;
           is_suspended?: boolean;
           created_at?: string;
@@ -55,6 +57,7 @@ export type Database = {
           city?: string | null;
           onboarded_at?: string | null;
           signup_intent?: Database["public"]["Enums"]["profile_intent"] | null;
+          deactivated_at?: string | null;
           is_verified?: boolean;
           is_suspended?: boolean;
           created_at?: string;
