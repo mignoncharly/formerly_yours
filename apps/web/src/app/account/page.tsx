@@ -50,6 +50,15 @@ export default async function AccountPage() {
           </Card>
         ) : (
           <>
+            <Link href="/sell" className="block">
+              <Card className="flex items-center justify-between p-5 hover:border-[color-mix(in_oklab,var(--color-paper)_30%,var(--color-line))]">
+                <span className="text-[var(--color-paper)]">Sell an item</span>
+                <span className="text-sm text-[var(--color-muted)]">
+                  List &amp; manage your items →
+                </span>
+              </Card>
+            </Link>
+
             <Card className="p-5">
               <h2 className="mb-4 text-[var(--color-paper)]">Profile</h2>
               <ProfileEditForm
