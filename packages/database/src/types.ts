@@ -24,6 +24,7 @@ export type Database = {
           country_code: string | null;
           city: string | null;
           onboarded_at: string | null;
+          signup_intent: Database["public"]["Enums"]["profile_intent"] | null;
           is_verified: boolean;
           is_suspended: boolean;
           created_at: string;
@@ -38,6 +39,7 @@ export type Database = {
           country_code?: string | null;
           city?: string | null;
           onboarded_at?: string | null;
+          signup_intent?: Database["public"]["Enums"]["profile_intent"] | null;
           is_verified?: boolean;
           is_suspended?: boolean;
           created_at?: string;
@@ -52,6 +54,7 @@ export type Database = {
           country_code?: string | null;
           city?: string | null;
           onboarded_at?: string | null;
+          signup_intent?: Database["public"]["Enums"]["profile_intent"] | null;
           is_verified?: boolean;
           is_suspended?: boolean;
           created_at?: string;
@@ -63,6 +66,7 @@ export type Database = {
     Views: Record<string, never>;
     Functions: Record<string, never>;
     Enums: {
+      profile_intent: "sell" | "browse" | "both";
       listing_status:
         | "draft"
         | "pending_review"
@@ -109,3 +113,18 @@ export type Database = {
     };
   };
 };
+
+// ---------------------------------------------------------------------------
+// Convenience aliases
+// ---------------------------------------------------------------------------
+export type Tables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Row"];
+export type TablesInsert<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Insert"];
+export type TablesUpdate<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Update"];
+export type Enums<T extends keyof Database["public"]["Enums"]> =
+  Database["public"]["Enums"][T];
+
+export type Profile = Tables<"profiles">;
+export type ProfileIntent = Enums<"profile_intent">;
