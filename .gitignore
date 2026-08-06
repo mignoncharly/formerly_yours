@@ -1,35 +1,43 @@
 # dependencies
-/node_modules
-/.pnp
+node_modules/
+.pnp
 .pnp.*
 
-# next.js
-/.next/
-/out/
+# builds
+.next/
+out/
+dist/
+build/
 next-env.d.ts
 
-# production
-/build
+# turbo
+.turbo/
 
-# local validation data (waitlist + analytics events captured in Phase 0)
-/data/*.jsonl
-
-# misc
-.DS_Store
-*.pem
-*.tsbuildinfo
-
-# debug logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# local validation data (Phase 0 waitlist + analytics events)
+data/
+**/data/*.jsonl
 
 # env files (never commit secrets)
 .env
 .env.local
 .env*.local
 
+# supabase local
+supabase/.branches
+supabase/.temp
+
+# misc
+.DS_Store
+*.pem
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
 # editor
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# local Claude Code settings
+.claude/settings.local.json

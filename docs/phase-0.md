@@ -48,25 +48,25 @@ Extra prototype signals: `feed_opened`, `feed_item_viewed`, `story_reacted`,
 ### Reading the numbers
 
 ```bash
-curl "https://<domain>/api/stats?key=$FY_ADMIN_KEY" | jq
+curl "https://<domain>/api/stats?key=$OWY_ADMIN_KEY" | jq
 ```
 
-Raw data lives in `FY_DATA_DIR` (`data/` by default):
+Raw data lives in `OWY_DATA_DIR` (`data/` by default):
 `events.jsonl`, `waitlist.jsonl`.
 
 ## Run locally
 
 ```bash
-npm install
-cp .env.example .env.local   # set FY_ADMIN_KEY
-npm run dev                  # http://localhost:3000
+pnpm install
+cp apps/web/.env.example apps/web/.env.local   # set OWY_ADMIN_KEY
+pnpm dev                  # http://localhost:3000
 ```
 
 Production build / start:
 
 ```bash
-npm run build
-npm run start
+pnpm build
+pnpm --filter @owy/web start
 ```
 
 Deployment to the Ubuntu VPS (IONOS): see [`deployment.md`](./deployment.md).

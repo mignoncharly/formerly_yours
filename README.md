@@ -1,71 +1,82 @@
-# Formerly Yours
+# Once Was Yours
 
 > **Sell the past. Fund what's next.**
 > A story-commerce marketplace: sell the objects a chapter of your life left
 > behind, tell their story, and fund whatever comes next.
 
-This repository currently contains **Phase 0 — Product Validation**: a polished
-landing page + fake prototype feed used to test whether people actually want to
-*sell* here (not just laugh at the stories) before any real product is built.
+Concept validated in **Phase 0** (landing + prototype feed). Now building
+**Phase 1 — Technical Foundation**: a pnpm + Turborepo monorepo, Supabase
+foundation, CI, design system and PWA.
 
-- 📄 Product vision, data model and 12-phase plan: see the source PDFs and
-  [`docs/phase-0.md`](docs/phase-0.md).
-- 🚀 Ubuntu VPS (IONOS) deployment: [`docs/deployment.md`](docs/deployment.md).
-- 🏷️ Brand/trademark checklist: [`docs/brand-validation.md`](docs/brand-validation.md).
+- 📄 Product vision, data model & 12-phase plan: [`docs/planning/`](docs/planning) (source PDFs)
+- 🧪 Phase 0 (validation): [`docs/phase-0.md`](docs/phase-0.md)
+- 🧱 Phase 1 (foundation): [`docs/phase-1.md`](docs/phase-1.md)
+- 🚀 Deployment (IONOS VPS → `oncewasyours.gestionatech.de`): [`docs/deployment.md`](docs/deployment.md)
+- 🏷️ Brand checklist: [`docs/brand-validation.md`](docs/brand-validation.md)
 
-## Stack (Phase 0)
+## Stack
 
-Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4. No backend —
-validation data (waitlist + analytics events) is written as JSONL on the server,
-so it runs self-contained on the VPS. The real backend (Supabase/PostgreSQL,
-auth, Stripe, monorepo) begins in **Phase 1**.
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 ·
+**pnpm + Turborepo** · Supabase/PostgreSQL (new publishable/secret keys) ·
+Zod. Stripe Connect and Expo (mobile) arrive in later phases.
 
 ## Quick start
 
 ```bash
-npm install
-cp .env.example .env.local     # set FY_ADMIN_KEY (and NEXT_PUBLIC_APP_URL)
-npm run dev                    # http://localhost:3000
+corepack enable                       # or: npm i -g pnpm
+pnpm install
+cp apps/web/.env.example apps/web/.env.local   # set OWY_ADMIN_KEY etc.
+pnpm dev                              # http://localhost:3000
 ```
+
+## Workspace layout
+
+```
+apps/
+  web/                  Next.js PWA (landing, feed, api, robots, sitemap, offline)
+packages/
+  config/               shared tsconfig presets (@owy/config)
+  types/                shared domain types (@owy/types)
+  validation/           Zod schemas (@owy/validation)
+  database/             Supabase client factories (@owy/database)
+supabase/
+  migrations/           0001_extensions, 0002_enums (blueprint order)
+  seed/ · functions/    seed data + Edge Functions (per phase)
+docs/                   phase-0, phase-1, deployment, brand-validation, planning/
+.github/workflows/      CI (install → typecheck → build)
+```
+
+> `apps/admin` (back-office) and packages `ui` / `domain` / `analytics` are
+> introduced in the phases that need them; for now the design system and the
+> analytics client live in `apps/web`.
+
+## Common scripts
+
+```bash
+pnpm dev            # turbo: run all dev tasks
+pnpm build          # turbo: build all
+pnpm typecheck      # turbo: tsc --noEmit across packages
+pnpm web:dev        # just the web app
+pnpm db:push        # supabase db push (see supabase/README.md)
+```
+
+## App routes (web)
 
 | Route | What |
 | --- | --- |
 | `/` | Landing page (two CTAs: *sell* vs *just the stories*) |
 | `/feed` | Prototype feed — 24 fictional examples, swipe / react / share |
-| `POST /api/waitlist` | Waitlist capture (`email`, `intent`) |
+| `/offline` | PWA offline fallback |
+| `POST /api/waitlist` | Waitlist capture (Zod-validated) |
 | `POST /api/events` | Validation event ingestion |
-| `GET /api/stats?key=…` | Aggregated funnel (protected by `FY_ADMIN_KEY`) |
-
-## Scripts
-
-```bash
-npm run dev         # dev server
-npm run build       # production build (standalone output)
-npm run start       # run the production server
-npm run typecheck   # tsc --noEmit
-```
-
-## Project layout
-
-```
-src/
-  app/                landing (/), feed (/feed), api routes, robots, sitemap
-  components/         Logo, ReactionBar, ExampleStoryCard, landing/*, feed/*
-  lib/
-    types.ts          domain types (mirrors the real schema vocabulary)
-    reference.ts      reactions, contexts, story modes, money formatting
-    fixtures.ts       24 fictional feed items
-    analytics.ts      client event tracker -> /api/events
-    server/store.ts   JSONL persistence (waitlist + events + stats)
-docs/                 phase-0, deployment, brand-validation
-```
+| `GET /api/stats?key=…` | Aggregated funnel (protected by `OWY_ADMIN_KEY`) |
 
 ## Roadmap
 
-Phase 0 (this) → 1 Foundation → 2 Auth/Identity → 3 Marketplace → 4 Stories →
+Phase 0 ✅ → **1 Foundation** → 2 Auth/Identity → 3 Marketplace → 4 Stories →
 5 Feed → 6 Next Chapter → 7 Trust & Safety → 8 Messaging/Offers →
 9 Stripe Connect → 10 Shipping/Disputes → 11 Growth → 12 iOS/Android (Expo).
 
 Guiding rule from the blueprint: **`listing ≠ story ≠ next_chapter ≠ order ≠
 payment ≠ moderation`**. PostgreSQL stays the source of truth; the frontend never
-decides authorization.
+decides authorization; money is stored in integer minor units.

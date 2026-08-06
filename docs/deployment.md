@@ -1,98 +1,115 @@
 # Deployment — Ubuntu VPS (IONOS)
 
-Phase 0 runs as a single **Next.js standalone** Node server behind **nginx**.
-`next.config.mjs` sets `output: "standalone"`, so the build produces a
-self-contained server under `.next/standalone`.
+Once Was Yours ships first to **`oncewasyours.gestionatech.de`** on the shared
+IONOS VPS **`217.154.166.155`**, living under `~/apps/` alongside the existing
+Django apps (`frisivo` / `gestiona` in `~/apps/gtech`). It runs as a **Next.js
+standalone** Node server behind **nginx** (not Vercel).
 
-> This replaces the Vercel hosting mentioned in the planning docs — we host the
-> web app on the IONOS Ubuntu VPS instead.
+- App directory: `~/apps/oncewasyours`
+- Monorepo standalone entry: `apps/web/.next/standalone/apps/web/server.js`
+- Node app port: **3000** (loopback only; change if another app already uses it)
 
-## 1. Server prerequisites (once)
+## 0. DNS (GoDaddy)
+
+`gestionatech.de` DNS is managed at GoDaddy. Add an **A record**:
+
+| Type | Host | Value | TTL |
+| --- | --- | --- | --- |
+| A | `oncewasyours` | `217.154.166.155` | 600 |
+
+→ resolves `oncewasyours.gestionatech.de`.
+
+## 1. Prerequisites (once per server)
+
+Node 22 + pnpm (corepack) + nginx + git. If the Django stack already installed
+nginx/git you only need Node + pnpm:
 
 ```bash
-sudo apt update && sudo apt upgrade -y
-# Node 22 LTS
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt install -y nodejs nginx git
-node -v   # v22.x
+sudo corepack enable && corepack prepare pnpm@11.20.0 --activate
+node -v && pnpm -v
 ```
 
 ## 2. Get the code
 
 ```bash
-sudo mkdir -p /var/www && sudo chown "$USER" /var/www
-cd /var/www
-git clone https://github.com/mignoncharly/formerly_yours.git
-cd formerly_yours
-npm ci
+mkdir -p ~/apps && cd ~/apps
+git clone https://github.com/mignoncharly/formerly_yours.git oncewasyours
+cd oncewasyours
+pnpm install --frozen-lockfile
 ```
+
+> The GitHub repo is still named `formerly_yours`; we clone it into a directory
+> named `oncewasyours`. (Rename the repo later with `gh repo rename once_was_yours`
+> if desired — then update the remote.)
 
 ## 3. Environment
 
 ```bash
-cp .env.example .env.local
-# edit:
-#   NEXT_PUBLIC_APP_URL=https://your-domain
-#   FY_DATA_DIR=/var/www/formerly_yours/data   (persistent; survives deploys)
-#   FY_ADMIN_KEY=<long random string>
+cp apps/web/.env.example apps/web/.env.local
+# edit apps/web/.env.local:
+#   NEXT_PUBLIC_APP_URL=https://oncewasyours.gestionatech.de
+#   OWY_DATA_DIR=/home/mignon/apps/oncewasyours/data   (persists across deploys)
+#   OWY_ADMIN_KEY=<long random string>
+#   NEXT_PUBLIC_SUPABASE_URL / *_PUBLISHABLE_KEY / SUPABASE_SECRET_KEY (Phase 2+)
+mkdir -p ~/apps/oncewasyours/data
 ```
 
-## 4. Build + prepare the standalone bundle
+## 4. Build + stage the standalone bundle
 
 ```bash
-npm run build
-# standalone needs static assets + public copied next to server.js:
-cp -r .next/static .next/standalone/.next/static
-cp -r public .next/standalone/public
+export NEXT_PUBLIC_APP_URL=https://oncewasyours.gestionatech.de
+pnpm build
+# standalone needs static + public copied next to the server entry:
+cp -r apps/web/.next/static  apps/web/.next/standalone/apps/web/.next/static
+cp -r apps/web/public        apps/web/.next/standalone/apps/web/public
 ```
 
-The runnable server is then `.next/standalone/server.js`.
+Runnable entry: `apps/web/.next/standalone/apps/web/server.js`.
+(`scripts/deploy.sh` automates steps 2–4 + restart.)
 
 ## 5. systemd service
 
-`/etc/systemd/system/formerly-yours.service`:
+`/etc/systemd/system/oncewasyours.service`:
 
 ```ini
 [Unit]
-Description=Formerly Yours (Phase 0)
+Description=Once Was Yours (web)
 After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/var/www/formerly_yours/.next/standalone
-# Load NEXT_PUBLIC_APP_URL, FY_DATA_DIR, FY_ADMIN_KEY from here:
-EnvironmentFile=/var/www/formerly_yours/.env.local
+User=mignon
+WorkingDirectory=/home/mignon/apps/oncewasyours/apps/web/.next/standalone/apps/web
+EnvironmentFile=/home/mignon/apps/oncewasyours/apps/web/.env.local
 Environment=PORT=3000
 Environment=HOSTNAME=127.0.0.1
-Environment=FY_DATA_DIR=/var/www/formerly_yours/data
+Environment=OWY_DATA_DIR=/home/mignon/apps/oncewasyours/data
 ExecStart=/usr/bin/node server.js
 Restart=always
-User=www-data
-Group=www-data
 
 [Install]
 WantedBy=multi-user.target
 ```
 
 ```bash
-sudo mkdir -p /var/www/formerly_yours/data
-sudo chown -R www-data:www-data /var/www/formerly_yours/data
 sudo systemctl daemon-reload
-sudo systemctl enable --now formerly-yours
-sudo systemctl status formerly-yours
+sudo systemctl enable --now oncewasyours
+sudo systemctl status oncewasyours
 ```
 
-> Because `FY_DATA_DIR` lives outside `.next/`, the captured waitlist/events
-> survive rebuilds and redeploys.
+> `OWY_DATA_DIR` lives outside `.next/`, so captured waitlist/events survive
+> rebuilds. (This JSONL store is the Phase 0 fallback; Phase 2+ moves to Supabase.)
 
-## 6. nginx reverse proxy
+## 6. nginx (subdomain server block)
 
-`/etc/nginx/sites-available/formerly-yours`:
+`/etc/nginx/sites-available/oncewasyours`:
 
 ```nginx
 server {
   listen 80;
-  server_name your-domain www.your-domain;
+  server_name oncewasyours.gestionatech.de;
 
   location / {
     proxy_pass http://127.0.0.1:3000;
@@ -109,7 +126,7 @@ server {
 ```
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/formerly-yours /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/oncewasyours /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
@@ -117,28 +134,20 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d your-domain -d www.your-domain
+sudo certbot --nginx -d oncewasyours.gestionatech.de
 ```
 
-Point the IONOS DNS A record for the domain at the VPS IP first.
+(Do this after the DNS A record has propagated.)
 
 ## 8. Redeploy
 
 ```bash
-cd /var/www/formerly_yours
-git pull
-npm ci
-npm run build
-cp -r .next/static .next/standalone/.next/static
-cp -r public .next/standalone/public
-sudo systemctl restart formerly-yours
+cd ~/apps/oncewasyours && ./scripts/deploy.sh
 ```
-
-> Tip: put steps 4 + 8 in a `scripts/deploy.sh` once the flow settles.
 
 ## Reading validation data on the server
 
 ```bash
-curl "https://your-domain/api/stats?key=$FY_ADMIN_KEY" | jq
-wc -l /var/www/formerly_yours/data/waitlist.jsonl
+curl "https://oncewasyours.gestionatech.de/api/stats?key=$OWY_ADMIN_KEY" | jq
+wc -l ~/apps/oncewasyours/data/waitlist.jsonl
 ```

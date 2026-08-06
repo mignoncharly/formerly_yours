@@ -1,0 +1,21 @@
+{
+  "name": "@owy/validation",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@owy/config": "workspace:*",
+    "@owy/types": "workspace:*",
+    "typescript": "^5.7.3"
+  }
+}

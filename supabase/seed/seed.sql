@@ -1,0 +1,5 @@
+-- seed.sql
+-- Reference/seed data. Populated per phase as the relevant tables land:
+--   * relationship_contexts + reactions reference (Phase 4 — Stories)
+--   * categories (Phase 3 — Marketplace)
+-- Intentionally empty in Phase 1 (no application tables exist yet).

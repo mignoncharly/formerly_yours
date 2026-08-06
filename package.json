@@ -1,26 +1,26 @@
 {
-  "name": "formerly-yours",
+  "name": "once-was-yours",
   "version": "0.0.0",
   "private": true,
-  "description": "Formerly Yours — Sell the past. Fund what's next. (Phase 0: product validation)",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "typecheck": "tsc --noEmit"
+  "description": "Once Was Yours — Sell the past. Fund what's next.",
+  "packageManager": "pnpm@11.20.0",
+  "engines": {
+    "node": ">=22"
   },
-  "dependencies": {
-    "next": "^16.3.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "server-only": "^0.0.1"
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rimraf node_modules",
+    "web:dev": "pnpm --filter @owy/web dev",
+    "web:build": "pnpm --filter @owy/web build",
+    "db:push": "supabase db push",
+    "db:diff": "supabase db diff",
+    "db:reset": "supabase db reset"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.0.0",
-    "@types/node": "^22.10.7",
-    "@types/react": "^19.0.7",
-    "@types/react-dom": "^19.0.3",
-    "tailwindcss": "^4.0.0",
-    "typescript": "^5.7.3"
+    "rimraf": "^6.0.1",
+    "turbo": "^2.3.3"
   }
 }

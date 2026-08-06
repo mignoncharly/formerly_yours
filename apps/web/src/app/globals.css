@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Once Was Yours — Phase 0 design tokens.
+   Mood: closure + a new beginning. Warm, emotional, mobile-first.
+--------------------------------------------------------------------------- */
+@theme {
+  --color-ink: #100b1a;
+  --color-ink-2: #171022;
+  --color-surface: #1c1430;
+  --color-surface-2: #251a3d;
+  --color-line: #35294f;
+
+  --color-paper: #f6f1ea;
+  --color-muted: #b1a6c1;
+  --color-faint: #7d7191;
+
+  --color-primary: #ff5d8f; /* rose — "the past" */
+  --color-primary-2: #ff8fb0;
+  --color-chapter: #5ce1a8; /* mint — "what's next" */
+  --color-gold: #e9c46a;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), Georgia, "Times New Roman", serif;
+
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-primary) 40%, transparent);
+}
+
+/* Reusable atoms ---------------------------------------------------------- */
+.owy-container {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.owy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.85rem 1.4rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease,
+    opacity 0.2s ease;
+  text-decoration: none;
+  line-height: 1;
+}
+.owy-btn:active {
+  transform: translateY(1px) scale(0.99);
+}
+.owy-btn-primary {
+  background: var(--color-primary);
+  color: #2a0714;
+}
+.owy-btn-primary:hover {
+  background: var(--color-primary-2);
+}
+.owy-btn-ghost {
+  background: transparent;
+  color: var(--color-paper);
+  border-color: var(--color-line);
+}
+.owy-btn-ghost:hover {
+  border-color: color-mix(in oklab, var(--color-paper) 45%, transparent);
+}
+.owy-btn-chapter {
+  background: var(--color-chapter);
+  color: #05271a;
+}
+
+.owy-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.66rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: color-mix(in oklab, var(--color-surface-2) 80%, transparent);
+  border: 1px solid var(--color-line);
+  color: var(--color-muted);
+}
+
+.owy-card {
+  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-ink-2) 100%);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+}
+
+.owy-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-primary-2);
+}
+
+/* Progress bar (Next Chapter funding) */
+.owy-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-surface-2);
+  overflow: hidden;
+}
+.owy-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-chapter), #9af5cf);
+}
+
+/* Feed vertical snap */
+.owy-feed {
+  height: 100dvh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.owy-feed::-webkit-scrollbar {
+  display: none;
+}
+.owy-slide {
+  height: 100dvh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+@keyframes owy-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  50% { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.owy-pop {
+  animation: owy-pop 0.35s ease;
+}
+
+@keyframes owy-rise {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.owy-rise {
+  animation: owy-rise 0.5s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .owy-pop, .owy-rise { animation: none; }
+}
