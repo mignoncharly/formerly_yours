@@ -61,3 +61,8 @@ export function shortIdFromHandle(handle: string): string {
 export function storyPath(shortId: string, title: string | null): string {
   return `/story/${slugify(title)}-${shortId}`;
 }
+
+/** Canonical chapter path: /chapter/[slug]-[shortId]. */
+export function chapterPath(shortId: string, title: string | null): string {
+  return `/chapter/${slugify(title)}-${shortId}`;
+}
