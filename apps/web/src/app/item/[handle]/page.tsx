@@ -192,9 +192,15 @@ export default async function ItemPage({
         </p>
       )}
 
-      {/* Seller (profile pages arrive later) */}
       <div className="mt-8 border-t border-[var(--color-line)] pt-5 text-sm text-[var(--color-muted)]">
-        Sold by <span className="text-[var(--color-paper)]">{sellerName}</span>
+        Sold by{" "}
+        {seller?.username ? (
+          <Link href={`/u/${seller.username}`} className="text-[var(--color-paper)] hover:underline">
+            {sellerName}
+          </Link>
+        ) : (
+          <span className="text-[var(--color-paper)]">{sellerName}</span>
+        )}
         {place ? ` · ${place}` : ""}
       </div>
 

@@ -26,6 +26,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       admin.from("relationship_contexts").select("slug").eq("is_active", true),
     ]);
 
+  // Public seller/storyteller profiles.
+  const { data: profiles } = await admin
+    .from("profiles")
+    .select("username, updated_at")
+    .not("username", "is", null)
+    .is("deactivated_at", null)
+    .eq("is_suspended", false)
+    .limit(LIMIT);
+
   // A story's slug comes from its linked listing's title.
   const storyListingIds = [...new Set((stories ?? []).map((s) => s.listing_id))];
   const { data: storyListings } = storyListingIds.length
@@ -45,6 +54,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   for (const t of contexts ?? []) {
     entries.push({ url: `${APP_URL}/tag/${t.slug}`, changeFrequency: "weekly", priority: 0.5 });
+  }
+  for (const p of profiles ?? []) {
+    entries.push({
+      url: `${APP_URL}/u/${p.username}`,
+      lastModified: new Date(p.updated_at),
+      changeFrequency: "weekly",
+      priority: 0.4,
+    });
   }
   for (const l of listings ?? []) {
     entries.push({

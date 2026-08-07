@@ -118,6 +118,7 @@ export default async function StoryPage({
 
   // Seller identity respects the story's visibility (§4.2).
   let sellerLine = "Anonymous";
+  let sellerUsername: string | null = null;
   if (story.visibility !== "anonymous") {
     const { data: seller } = await admin
       .from("profiles")
@@ -126,6 +127,7 @@ export default async function StoryPage({
       .maybeSingle();
     if (story.visibility === "public") {
       sellerLine = seller?.display_name?.trim() || seller?.username || "A seller";
+      sellerUsername = seller?.username ?? null;
     } else {
       sellerLine = "A seller";
     }
@@ -248,7 +250,14 @@ export default async function StoryPage({
       {story.visibility === "public" && (
         <div className="mt-6 flex items-center justify-between">
           <span className="text-sm text-[var(--color-muted)]">
-            By <span className="text-[var(--color-paper)]">{sellerLine}</span>
+            By{" "}
+            {sellerUsername ? (
+              <Link href={`/u/${sellerUsername}`} className="text-[var(--color-paper)] hover:underline">
+                {sellerLine}
+              </Link>
+            ) : (
+              <span className="text-[var(--color-paper)]">{sellerLine}</span>
+            )}
           </span>
           {user && user.id !== story.author_id && (
             <div className="flex items-center gap-3">
