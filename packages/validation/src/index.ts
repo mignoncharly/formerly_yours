@@ -150,3 +150,60 @@ export const listingSearchSchema = z.object({
   page: z.coerce.number().int().min(1).max(1000).default(1),
 });
 export type ListingSearchInput = z.infer<typeof listingSearchSchema>;
+
+// ---------------------------------------------------------------------------
+// Story engine (§4). A story says WHY an object is being sold. Identity
+// visibility is independent of story tone (mode). The raw input is retained for
+// audit; the AI only rephrases, never invents (§4.4).
+// ---------------------------------------------------------------------------
+export const reactionTypeSchema = z.enum([
+  "dead",
+  "red_flag",
+  "tea",
+  "good_for_you",
+  "sending_love",
+  "savage",
+]);
+
+// AI assistant polish actions (§4.3).
+export const aiStoryActionSchema = z.enum([
+  "keep",
+  "shorter",
+  "witty",
+  "classy",
+  "playful",
+]);
+export type AiStoryAction = z.infer<typeof aiStoryActionSchema>;
+
+export const storyHeadlineSchema = z.string().trim().max(120);
+export const storyBodySchema = z
+  .string()
+  .trim()
+  .min(10, "Tell a little more of the story.")
+  .max(4000, "Keep it under 4000 characters.");
+
+// Draft autosave — everything optional.
+export const storyDraftSchema = z.object({
+  headline: storyHeadlineSchema.optional().or(z.literal("")),
+  body: z.string().trim().max(4000).optional().or(z.literal("")),
+  mode: storyModeSchema.optional(),
+  visibility: identityVisibilitySchema.optional(),
+  contextIds: z.array(z.number().int().positive()).max(3).optional(),
+});
+export type StoryDraftInput = z.infer<typeof storyDraftSchema>;
+
+// Publish — a body is required; up to 3 relationship contexts.
+export const storyPublishSchema = z.object({
+  headline: storyHeadlineSchema.optional().or(z.literal("")),
+  body: storyBodySchema,
+  mode: storyModeSchema,
+  visibility: identityVisibilitySchema,
+  contextIds: z.array(z.number().int().positive()).max(3),
+});
+export type StoryPublishInput = z.infer<typeof storyPublishSchema>;
+
+export const commentSchema = z.object({
+  body: z.string().trim().min(1, "Say something.").max(1000, "Keep it under 1000 characters."),
+  parentCommentId: z.string().uuid().optional(),
+});
+export type CommentInput = z.infer<typeof commentSchema>;

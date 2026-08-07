@@ -208,6 +208,147 @@ export type Database = {
         };
         Relationships: [];
       };
+      relationship_contexts: {
+        Row: {
+          id: number;
+          slug: string;
+          label: string;
+          emoji: string | null;
+          is_sensitive: boolean;
+          sort_order: number;
+          is_active: boolean;
+        };
+        Insert: {
+          id?: number;
+          slug: string;
+          label: string;
+          emoji?: string | null;
+          is_sensitive?: boolean;
+          sort_order?: number;
+          is_active?: boolean;
+        };
+        Update: {
+          id?: number;
+          slug?: string;
+          label?: string;
+          emoji?: string | null;
+          is_sensitive?: boolean;
+          sort_order?: number;
+          is_active?: boolean;
+        };
+        Relationships: [];
+      };
+      stories: {
+        Row: {
+          id: string;
+          listing_id: string;
+          author_id: string;
+          short_id: string;
+          mode: Database["public"]["Enums"]["story_mode"];
+          visibility: Database["public"]["Enums"]["identity_visibility"];
+          headline: string | null;
+          body: string | null;
+          original_input: string | null;
+          ai_assisted: boolean;
+          moderation_status: Database["public"]["Enums"]["moderation_status"];
+          published_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          listing_id: string;
+          author_id: string;
+          short_id?: string;
+          mode?: Database["public"]["Enums"]["story_mode"];
+          visibility?: Database["public"]["Enums"]["identity_visibility"];
+          headline?: string | null;
+          body?: string | null;
+          original_input?: string | null;
+          ai_assisted?: boolean;
+          moderation_status?: Database["public"]["Enums"]["moderation_status"];
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          listing_id?: string;
+          author_id?: string;
+          short_id?: string;
+          mode?: Database["public"]["Enums"]["story_mode"];
+          visibility?: Database["public"]["Enums"]["identity_visibility"];
+          headline?: string | null;
+          body?: string | null;
+          original_input?: string | null;
+          ai_assisted?: boolean;
+          moderation_status?: Database["public"]["Enums"]["moderation_status"];
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      story_relationship_contexts: {
+        Row: { story_id: string; context_id: number };
+        Insert: { story_id: string; context_id: number };
+        Update: { story_id?: string; context_id?: number };
+        Relationships: [];
+      };
+      story_reactions: {
+        Row: {
+          story_id: string;
+          user_id: string;
+          reaction: Database["public"]["Enums"]["reaction_type"];
+          created_at: string;
+        };
+        Insert: {
+          story_id: string;
+          user_id: string;
+          reaction: Database["public"]["Enums"]["reaction_type"];
+          created_at?: string;
+        };
+        Update: {
+          story_id?: string;
+          user_id?: string;
+          reaction?: Database["public"]["Enums"]["reaction_type"];
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      comments: {
+        Row: {
+          id: string;
+          story_id: string;
+          author_id: string;
+          parent_comment_id: string | null;
+          body: string;
+          moderation_status: Database["public"]["Enums"]["moderation_status"];
+          created_at: string;
+          edited_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          story_id: string;
+          author_id: string;
+          parent_comment_id?: string | null;
+          body: string;
+          moderation_status?: Database["public"]["Enums"]["moderation_status"];
+          created_at?: string;
+          edited_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          story_id?: string;
+          author_id?: string;
+          parent_comment_id?: string | null;
+          body?: string;
+          moderation_status?: Database["public"]["Enums"]["moderation_status"];
+          created_at?: string;
+          edited_at?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -223,6 +364,17 @@ export type Database = {
           off?: number | null;
         };
         Returns: Database["public"]["Tables"]["listings"]["Row"][];
+      };
+      story_reaction_counts: {
+        Args: { in_story: string };
+        Returns: {
+          reaction: Database["public"]["Enums"]["reaction_type"];
+          count: number;
+        }[];
+      };
+      story_is_visible: {
+        Args: { sid: string };
+        Returns: boolean;
       };
     };
     Enums: {
@@ -294,3 +446,10 @@ export type ListingImage = Tables<"listing_images">;
 export type SavedListing = Tables<"saved_listings">;
 export type ItemCondition = Enums<"item_condition">;
 export type ListingStatus = Enums<"listing_status">;
+export type Story = Tables<"stories">;
+export type RelationshipContext = Tables<"relationship_contexts">;
+export type StoryReaction = Tables<"story_reactions">;
+export type Comment = Tables<"comments">;
+export type StoryMode = Enums<"story_mode">;
+export type IdentityVisibility = Enums<"identity_visibility">;
+export type ReactionType = Enums<"reaction_type">;
