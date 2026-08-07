@@ -25,6 +25,8 @@ export function ListingCard({
           <img
             src={thumbnail}
             alt={listing.title ?? ""}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover transition duration-200 group-hover:scale-105"
           />
         ) : (

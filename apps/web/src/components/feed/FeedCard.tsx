@@ -34,6 +34,8 @@ export function FeedCard({
           <img
             src={thumbnail}
             alt={story.listing_title ?? ""}
+            loading="lazy"
+            decoding="async"
             className="h-64 w-full object-cover"
           />
         ) : (

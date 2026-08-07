@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceSupabaseClient } from "@owy/database/server";
 import { getSignedThumbnails } from "@/lib/listing-images";
 import { FeedCard } from "@/components/feed/FeedCard";
 import { BottomNav } from "@/components/BottomNav";
@@ -11,11 +11,18 @@ export const metadata: Metadata = {
     "The best stories on Once Was Yours — the most savage goodbyes, the best new beginnings, and the plot twists nobody saw coming.",
 };
 
+// The Hall of Fame is identical for everyone (no per-user data), so cache it as
+// ISR instead of running the multi-category aggregation on every request. 5 min
+// keeps it fresh while staying well under the 1h signed-thumbnail expiry.
+export const revalidate = 300;
+
 // §11.3 — a curated, opt-in showcase. One ranked row per category.
 const PER_CATEGORY = 8;
 
 export default async function HallOfFamePage() {
-  const supabase = await createClient();
+  // Cookie-free client so the route stays statically renderable (ISR); the
+  // hall_of_fame() function already restricts output to public content.
+  const supabase = createServiceSupabaseClient();
 
   const { data: categories } = await supabase
     .from("hall_of_fame_categories")

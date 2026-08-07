@@ -201,6 +201,8 @@ export default async function StoryPage({
         <img
           src={heroUrl}
           alt={listing?.title ?? ""}
+          fetchPriority="high"
+          decoding="async"
           className="mb-6 max-h-96 w-full rounded-xl border border-[var(--color-line)] object-cover"
         />
       ) : null}

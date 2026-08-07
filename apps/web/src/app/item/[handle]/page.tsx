@@ -120,12 +120,16 @@ export default async function ItemPage({
       {/* Gallery */}
       {gallery.length > 0 ? (
         <div className="mb-6 flex snap-x gap-3 overflow-x-auto">
-          {gallery.map((img) => (
+          {gallery.map((img, i) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               key={img.id}
               src={img.url}
               alt={listing.title ?? ""}
+              // First gallery image is the LCP candidate; defer the rest.
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : undefined}
+              decoding="async"
               className="h-80 w-auto shrink-0 snap-center rounded-xl border border-[var(--color-line)] object-cover"
             />
           ))}
