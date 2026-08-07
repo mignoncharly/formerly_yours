@@ -207,3 +207,31 @@ export const commentSchema = z.object({
   parentCommentId: z.string().uuid().optional(),
 });
 export type CommentInput = z.infer<typeof commentSchema>;
+
+// ---------------------------------------------------------------------------
+// Next Chapter (§6). What a sale funds. Amounts in integer minor units.
+// ---------------------------------------------------------------------------
+export const chapterTemplateSchema = z.enum([
+  "solo_trip",
+  "new_home",
+  "fresh_start",
+  "study",
+  "start_a_business",
+  "savings",
+  "something_new",
+]);
+export type ChapterTemplate = z.infer<typeof chapterTemplateSchema>;
+
+export const chapterCreateSchema = z.object({
+  title: z.string().trim().min(2, "Give your chapter a title.").max(80),
+  description: optionalText(1000),
+  // target in minor units; optional (open-ended goal allowed)
+  targetMinor: priceMinorSchema.optional(),
+  visibility: identityVisibilitySchema.default("public"),
+});
+export type ChapterCreateInput = z.infer<typeof chapterCreateSchema>;
+
+export const chapterUpdateSchema = z.object({
+  body: z.string().trim().min(3, "Say a little more.").max(2000),
+});
+export type ChapterUpdateInput = z.infer<typeof chapterUpdateSchema>;

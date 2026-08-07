@@ -367,9 +367,100 @@ export type Database = {
         };
         Relationships: [];
       };
+      next_chapters: {
+        Row: {
+          id: string;
+          owner_id: string;
+          short_id: string;
+          title: string;
+          description: string | null;
+          target_amount: number | null;
+          currency: string;
+          visibility: Database["public"]["Enums"]["identity_visibility"];
+          status: Database["public"]["Enums"]["chapter_status"];
+          is_simulated: boolean;
+          completed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          owner_id: string;
+          short_id?: string;
+          title: string;
+          description?: string | null;
+          target_amount?: number | null;
+          currency?: string;
+          visibility?: Database["public"]["Enums"]["identity_visibility"];
+          status?: Database["public"]["Enums"]["chapter_status"];
+          is_simulated?: boolean;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          owner_id?: string;
+          short_id?: string;
+          title?: string;
+          description?: string | null;
+          target_amount?: number | null;
+          currency?: string;
+          visibility?: Database["public"]["Enums"]["identity_visibility"];
+          status?: Database["public"]["Enums"]["chapter_status"];
+          is_simulated?: boolean;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      listing_chapters: {
+        Row: { listing_id: string; chapter_id: string };
+        Insert: { listing_id: string; chapter_id: string };
+        Update: { listing_id?: string; chapter_id?: string };
+        Relationships: [];
+      };
+      chapter_updates: {
+        Row: {
+          id: string;
+          chapter_id: string;
+          author_id: string;
+          body: string;
+          image_path: string | null;
+          moderation_status: Database["public"]["Enums"]["moderation_status"];
+          published_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          chapter_id: string;
+          author_id: string;
+          body: string;
+          image_path?: string | null;
+          moderation_status?: Database["public"]["Enums"]["moderation_status"];
+          published_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          chapter_id?: string;
+          author_id?: string;
+          body?: string;
+          image_path?: string | null;
+          moderation_status?: Database["public"]["Enums"]["moderation_status"];
+          published_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
+      chapter_progress: {
+        Args: { in_chapter: string };
+        Returns: { raised: number; items_sold: number }[];
+      };
       feed_stories: {
         Args: {
           viewer?: string | null;
@@ -495,6 +586,9 @@ export type RelationshipContext = Tables<"relationship_contexts">;
 export type StoryReaction = Tables<"story_reactions">;
 export type Comment = Tables<"comments">;
 export type Follow = Tables<"follows">;
+export type NextChapter = Tables<"next_chapters">;
+export type ChapterUpdate = Tables<"chapter_updates">;
+export type ChapterStatus = Enums<"chapter_status">;
 export type StoryMode = Enums<"story_mode">;
 export type IdentityVisibility = Enums<"identity_visibility">;
 export type ReactionType = Enums<"reaction_type">;
