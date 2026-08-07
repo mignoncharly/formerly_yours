@@ -14,6 +14,7 @@ import { StoryReactions } from "./StoryReactions";
 import { StoryComments } from "./StoryComments";
 import { StoryShare } from "./StoryShare";
 import { FollowButton } from "./FollowButton";
+import { HallOfFameToggle } from "./HallOfFameToggle";
 import { ReportButton } from "@/components/ReportButton";
 import { BlockButton } from "@/components/BlockButton";
 import type { CommentView } from "./comment-actions";
@@ -274,6 +275,13 @@ export default async function StoryPage({
           label="Report this story"
         />
       </div>
+
+      {user && user.id === story.author_id && (
+        <HallOfFameToggle
+          storyId={story.id}
+          initialOptedIn={story.hall_of_fame_opt_in}
+        />
+      )}
 
       {/* The object */}
       {listing && itemHandle && (

@@ -57,9 +57,17 @@ export default async function FeedPage({
         <h1 className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-paper)]">
           Feed
         </h1>
-        <Link href="/sell" className="text-sm text-[var(--color-muted)] underline underline-offset-4">
-          Sell →
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/hall-of-fame"
+            className="text-sm text-[var(--color-muted)] underline underline-offset-4"
+          >
+            Hall of Fame
+          </Link>
+          <Link href="/sell" className="text-sm text-[var(--color-muted)] underline underline-offset-4">
+            Sell →
+          </Link>
+        </div>
       </div>
 
       <div className="mb-5 flex gap-2 border-b border-[var(--color-line)]">

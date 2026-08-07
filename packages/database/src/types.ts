@@ -254,6 +254,7 @@ export type Database = {
           original_input: string | null;
           ai_assisted: boolean;
           moderation_status: Database["public"]["Enums"]["moderation_status"];
+          hall_of_fame_opt_in: boolean;
           published_at: string | null;
           created_at: string;
           updated_at: string;
@@ -270,6 +271,7 @@ export type Database = {
           original_input?: string | null;
           ai_assisted?: boolean;
           moderation_status?: Database["public"]["Enums"]["moderation_status"];
+          hall_of_fame_opt_in?: boolean;
           published_at?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -286,6 +288,7 @@ export type Database = {
           original_input?: string | null;
           ai_assisted?: boolean;
           moderation_status?: Database["public"]["Enums"]["moderation_status"];
+          hall_of_fame_opt_in?: boolean;
           published_at?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -296,6 +299,36 @@ export type Database = {
         Row: { story_id: string; context_id: number };
         Insert: { story_id: string; context_id: number };
         Update: { story_id?: string; context_id?: number };
+        Relationships: [];
+      };
+      hall_of_fame_categories: {
+        Row: {
+          key: string;
+          title: string;
+          blurb: string;
+          reaction: Database["public"]["Enums"]["reaction_type"] | null;
+          window_days: number | null;
+          sort_order: number;
+          is_active: boolean;
+        };
+        Insert: {
+          key: string;
+          title: string;
+          blurb: string;
+          reaction?: Database["public"]["Enums"]["reaction_type"] | null;
+          window_days?: number | null;
+          sort_order?: number;
+          is_active?: boolean;
+        };
+        Update: {
+          key?: string;
+          title?: string;
+          blurb?: string;
+          reaction?: Database["public"]["Enums"]["reaction_type"] | null;
+          window_days?: number | null;
+          sort_order?: number;
+          is_active?: boolean;
+        };
         Relationships: [];
       };
       story_reactions: {
@@ -919,6 +952,24 @@ export type Database = {
         Returns: {
           reaction: Database["public"]["Enums"]["reaction_type"];
           count: number;
+        }[];
+      };
+      hall_of_fame: {
+        Args: { cat_key: string; lim?: number | null };
+        Returns: {
+          story_id: string;
+          story_short_id: string;
+          headline: string | null;
+          body: string | null;
+          visibility: Database["public"]["Enums"]["identity_visibility"];
+          published_at: string | null;
+          author_id: string;
+          listing_id: string;
+          listing_short_id: string;
+          listing_title: string | null;
+          price_amount: number | null;
+          currency: string;
+          metric_count: number;
         }[];
       };
       story_is_visible: {
