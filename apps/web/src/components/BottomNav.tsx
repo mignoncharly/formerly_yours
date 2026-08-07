@@ -5,7 +5,7 @@ const ITEMS: { href: string; label: string; icon: string }[] = [
   { href: "/feed", label: "Home", icon: "⌂" },
   { href: "/browse", label: "Discover", icon: "⌕" },
   { href: "/sell", label: "Sell", icon: "＋" },
-  { href: "/saved", label: "Saved", icon: "♡" },
+  { href: "/messages", label: "Inbox", icon: "✉" },
   { href: "/account", label: "You", icon: "☺" },
 ];
 

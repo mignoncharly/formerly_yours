@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceSupabaseClient } from "@owy/database/server";
@@ -11,6 +12,7 @@ import {
 } from "@/lib/listings";
 import { SaveButton } from "./SaveButton";
 import { ShareButton } from "./ShareButton";
+import { BuyerActions } from "./BuyerActions";
 import { ReportButton } from "@/components/ReportButton";
 
 async function loadListing(handle: string) {
@@ -134,6 +136,26 @@ export default async function ItemPage({
         />
         <ShareButton title={listing.title ?? "Once Was Yours"} />
       </div>
+
+      {user && user.id === listing.seller_id ? (
+        <Link
+          href="/offers"
+          className="mt-4 inline-block text-sm text-[var(--color-muted)] underline underline-offset-4"
+        >
+          Manage offers →
+        </Link>
+      ) : (
+        <BuyerActions
+          listingId={listing.id}
+          sellerId={listing.seller_id}
+          signedIn={!!user}
+          next={listingPath(listing)}
+        />
+      )}
+
+      <p className="mt-2 text-xs text-[var(--color-faint)]">
+        Keep payments on Once Was Yours for protection.
+      </p>
 
       {listing.description && (
         <p className="mt-6 whitespace-pre-wrap text-[var(--color-paper)]">

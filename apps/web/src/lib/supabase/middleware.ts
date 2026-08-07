@@ -18,6 +18,8 @@ const PROTECTED_PREFIXES = [
   "/saved",
   "/chapters",
   "/moderation",
+  "/messages",
+  "/offers",
   "/onboarding",
 ];
 
