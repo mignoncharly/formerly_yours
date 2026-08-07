@@ -30,6 +30,23 @@ SUPABASE_ACCESS_TOKEN=<Supabase Management PAT> node scripts/configure-auth.mjs
 
 Templates are version-controlled in `supabase/auth/templates/`.
 
+## "Confirmation link → 502 Bad Gateway" — nginx proxy buffers
+
+On a *successful* confirmation, Supabase SSR sets the session as a large
+`sb-<ref>-auth-token` cookie split across several `Set-Cookie` headers. nginx's
+default `proxy_buffer_size` (8k) can't hold that response header block, so
+`/auth/confirm` returns 502 with *"upstream sent too big header while reading
+response header from upstream"* in `/var/log/nginx/error.log`. A bad/expired
+token sets no cookie, so it redirects fine — only real confirmations 502.
+
+Fix (server, one-time): enlarge the proxy buffers — see
+`deploy/nginx-proxy-buffers.conf`:
+
+```bash
+sudo cp deploy/nginx-proxy-buffers.conf /etc/nginx/conf.d/proxy-buffers.conf
+sudo nginx -t && sudo systemctl reload nginx
+```
+
 ## "Signup email lands in junk" — deliverability posture
 
 This is **not** an authentication misconfiguration. For `gestionatech.de`:
