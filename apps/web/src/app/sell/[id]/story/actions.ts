@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { storyPublishSchema, aiStoryActionSchema } from "@owy/validation";
+import { storyPublishSchema, aiStoryActionSchema, detectPII } from "@owy/validation";
 import type {
   TablesUpdate,
   StoryMode,
@@ -104,6 +104,16 @@ export async function publishStory(input: {
   });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Please check the story." };
+  }
+
+  // §7.2 — "Tell your story. Never expose theirs." Block obvious third-party
+  // contact details at publish time.
+  const pii = detectPII(input.body);
+  if (pii.length > 0) {
+    return {
+      ok: false,
+      error: `Please remove ${pii.join(", ")} from your story — never share anyone's contact details.`,
+    };
   }
 
   await setStoryContexts(input.storyId, input.contextIds);

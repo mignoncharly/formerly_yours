@@ -14,6 +14,8 @@ import { StoryReactions } from "./StoryReactions";
 import { StoryComments } from "./StoryComments";
 import { StoryShare } from "./StoryShare";
 import { FollowButton } from "./FollowButton";
+import { ReportButton } from "@/components/ReportButton";
+import { BlockButton } from "@/components/BlockButton";
 import type { CommentView } from "./comment-actions";
 
 async function loadStory(handle: string) {
@@ -138,6 +140,17 @@ export default async function StoryPage({
     isFollowing = !!f;
   }
 
+  // Blocked authors — hide their comments and offer block on the author.
+  let blockedSet = new Set<string>();
+  if (user) {
+    const { data: bl } = await supabase
+      .from("blocked_users")
+      .select("blocked_id")
+      .eq("blocker_id", user.id);
+    blockedSet = new Set((bl ?? []).map((b) => b.blocked_id));
+  }
+  const isBlocked = blockedSet.has(story.author_id);
+
   const tags = tagList ?? [];
   const itemHandle = listing ? listingPath({ title: listing.title, short_id: listing.short_id }) : null;
 
@@ -154,7 +167,9 @@ export default async function StoryPage({
   const nameById = new Map(
     (commentAuthors ?? []).map((a) => [a.id, a.display_name?.trim() || a.username || "Someone"]),
   );
-  const initialComments: CommentView[] = (commentRows ?? []).map((c) => ({
+  const initialComments: CommentView[] = (commentRows ?? [])
+    .filter((c) => !blockedSet.has(c.author_id))
+    .map((c) => ({
     id: c.id,
     body: c.body,
     parentCommentId: c.parent_comment_id,
@@ -219,15 +234,32 @@ export default async function StoryPage({
             By <span className="text-[var(--color-paper)]">{sellerLine}</span>
           </span>
           {user && user.id !== story.author_id && (
-            <FollowButton
-              followedId={story.author_id}
-              initialFollowing={isFollowing}
-              signedIn={!!user}
-              next={`/story/${handle}`}
-            />
+            <div className="flex items-center gap-3">
+              <BlockButton
+                blockedId={story.author_id}
+                initialBlocked={isBlocked}
+                signedIn={!!user}
+                next={`/story/${handle}`}
+              />
+              <FollowButton
+                followedId={story.author_id}
+                initialFollowing={isFollowing}
+                signedIn={!!user}
+                next={`/story/${handle}`}
+              />
+            </div>
           )}
         </div>
       )}
+
+      <div className="mt-4">
+        <ReportButton
+          target={{ storyId: story.id }}
+          signedIn={!!user}
+          next={`/story/${handle}`}
+          label="Report this story"
+        />
+      </div>
 
       {/* The object */}
       {listing && itemHandle && (

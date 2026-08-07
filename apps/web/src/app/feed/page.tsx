@@ -33,7 +33,15 @@ export default async function FeedPage({
     off: 0,
   });
 
-  const stories = rows ?? [];
+  let stories = rows ?? [];
+  if (user) {
+    const { data: bl } = await supabase
+      .from("blocked_users")
+      .select("blocked_id")
+      .eq("blocker_id", user.id);
+    const blocked = new Set((bl ?? []).map((b) => b.blocked_id));
+    if (blocked.size > 0) stories = stories.filter((s) => !blocked.has(s.author_id));
+  }
   const thumbs = await getSignedThumbnails(stories.map((s) => s.listing_id));
 
   const tabClass = (active: boolean) =>

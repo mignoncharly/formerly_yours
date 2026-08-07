@@ -1,6 +1,6 @@
 "use server";
 
-import { commentSchema } from "@owy/validation";
+import { commentSchema, detectPII } from "@owy/validation";
 import { createClient } from "@/lib/supabase/server";
 
 export type CommentView = {
@@ -42,6 +42,12 @@ export async function addComment(input: {
   });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid comment." };
+  }
+
+  // §7.2 — keep third-party contact details out of comments.
+  const pii = detectPII(parsed.data.body);
+  if (pii.length > 0) {
+    return { ok: false, error: `Please remove ${pii.join(", ")} from your comment.` };
   }
 
   // Enforce one reply level: a reply's parent must be a top-level comment.

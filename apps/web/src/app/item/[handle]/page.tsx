@@ -11,6 +11,7 @@ import {
 } from "@/lib/listings";
 import { SaveButton } from "./SaveButton";
 import { ShareButton } from "./ShareButton";
+import { ReportButton } from "@/components/ReportButton";
 
 async function loadListing(handle: string) {
   const supabase = await createClient();
@@ -144,6 +145,15 @@ export default async function ItemPage({
       <div className="mt-8 border-t border-[var(--color-line)] pt-5 text-sm text-[var(--color-muted)]">
         Sold by <span className="text-[var(--color-paper)]">{sellerName}</span>
         {place ? ` · ${place}` : ""}
+      </div>
+
+      <div className="mt-3">
+        <ReportButton
+          target={{ listingId: listing.id }}
+          signedIn={!!user}
+          next={listingPath(listing)}
+          label="Report this listing"
+        />
       </div>
 
       {/* Story preview + Next Chapter arrive in Phase 4/6 (§3.5). */}

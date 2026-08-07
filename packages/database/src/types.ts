@@ -679,5 +679,7 @@ export type IdentityVisibility = Enums<"identity_visibility">;
 export type ReactionType = Enums<"reaction_type">;
 export type Report = Tables<"reports">;
 export type ReportReason = Enums<"report_reason">;
+export type ReportStatus = Enums<"report_status">;
 export type StaffRole = Enums<"staff_role">;
 export type BlockedUser = Tables<"blocked_users">;
+export type ModerationStatus = Enums<"moderation_status">;
