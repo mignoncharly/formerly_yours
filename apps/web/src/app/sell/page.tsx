@@ -46,16 +46,17 @@ export default async function SellPage() {
           <ul className="flex flex-col gap-2">
             {drafts.map((l) => (
               <li key={l.id}>
-                <Link href={`/sell/${l.id}`} className="block">
-                  <Card className="flex items-center justify-between p-4 hover:border-[color-mix(in_oklab,var(--color-paper)_30%,var(--color-line))]">
-                    <span className="text-[var(--color-paper)]">
-                      {l.title?.trim() || "Untitled draft"}
-                    </span>
-                    <span className="text-sm text-[var(--color-muted)]">
-                      {formatMinorPrice(l.price_amount, l.currency)} · Continue →
-                    </span>
-                  </Card>
-                </Link>
+                <Card className="flex items-center justify-between p-4">
+                  <Link href={`/sell/${l.id}`} className="text-[var(--color-paper)] hover:underline">
+                    {l.title?.trim() || "Untitled draft"}
+                  </Link>
+                  <span className="flex items-center gap-3 text-sm text-[var(--color-muted)]">
+                    {formatMinorPrice(l.price_amount, l.currency)}
+                    <Link href={`/sell/${l.id}/story`} className="underline underline-offset-4 hover:text-[var(--color-paper)]">
+                      Story
+                    </Link>
+                  </span>
+                </Card>
               </li>
             ))}
           </ul>
@@ -74,16 +75,17 @@ export default async function SellPage() {
           <ul className="flex flex-col gap-2">
             {live.map((l) => (
               <li key={l.id}>
-                <Link href={listingPath(l)} className="block">
-                  <Card className="flex items-center justify-between p-4 hover:border-[color-mix(in_oklab,var(--color-paper)_30%,var(--color-line))]">
-                    <span className="text-[var(--color-paper)]">
-                      {l.title?.trim() || "Untitled"}
-                    </span>
-                    <span className="text-sm text-[var(--color-muted)]">
-                      {formatMinorPrice(l.price_amount, l.currency)} · {l.status}
-                    </span>
-                  </Card>
-                </Link>
+                <Card className="flex items-center justify-between p-4">
+                  <Link href={listingPath(l)} className="text-[var(--color-paper)] hover:underline">
+                    {l.title?.trim() || "Untitled"}
+                  </Link>
+                  <span className="flex items-center gap-3 text-sm text-[var(--color-muted)]">
+                    {formatMinorPrice(l.price_amount, l.currency)}
+                    <Link href={`/sell/${l.id}/story`} className="underline underline-offset-4 hover:text-[var(--color-paper)]">
+                      Story
+                    </Link>
+                  </span>
+                </Card>
               </li>
             ))}
           </ul>

@@ -10,6 +10,7 @@
     "clean": "rimraf .next"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
     "@owy/database": "workspace:*",
     "@owy/types": "workspace:*",
     "@owy/validation": "workspace:*",
