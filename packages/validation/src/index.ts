@@ -294,3 +294,21 @@ const OFF_PLATFORM_RE =
 export function detectOffPlatform(text: string): boolean {
   return OFF_PLATFORM_RE.test(text) || detectPII(text).includes("phone") || detectPII(text).includes("email");
 }
+
+// ---------------------------------------------------------------------------
+// Disputes (§10.4).
+// ---------------------------------------------------------------------------
+export const disputeReasonSchema = z.enum([
+  "item_never_arrived",
+  "different_item",
+  "major_damage",
+  "counterfeit",
+  "other",
+]);
+export type DisputeReason = z.infer<typeof disputeReasonSchema>;
+
+export const disputeOpenSchema = z.object({
+  reason: disputeReasonSchema,
+  details: optionalText(1000),
+});
+export type DisputeOpenInput = z.infer<typeof disputeOpenSchema>;

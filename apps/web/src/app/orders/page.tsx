@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { requireOnboarded } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceSupabaseClient } from "@owy/database/server";
@@ -55,15 +56,17 @@ export default async function OrdersPage({
             const lid = listingByOrder.get(o.id);
             return (
               <li key={o.id}>
-                <Card className="flex items-center justify-between p-4">
-                  <span className="text-[var(--color-paper)]">
-                    {(lid && titleById.get(lid)) || "Order"}
-                  </span>
-                  <span className="text-sm text-[var(--color-muted)]">
-                    {formatMinorPrice(o.total_amount, o.currency)} ·{" "}
-                    {o.seller_id === profile.id ? "sold" : "bought"} · {o.status}
-                  </span>
-                </Card>
+                <Link href={`/orders/${o.id}`} className="block">
+                  <Card className="flex items-center justify-between p-4 hover:border-[color-mix(in_oklab,var(--color-paper)_30%,var(--color-line))]">
+                    <span className="text-[var(--color-paper)]">
+                      {(lid && titleById.get(lid)) || "Order"}
+                    </span>
+                    <span className="text-sm text-[var(--color-muted)]">
+                      {formatMinorPrice(o.total_amount, o.currency)} ·{" "}
+                      {o.seller_id === profile.id ? "sold" : "bought"} · {o.status}
+                    </span>
+                  </Card>
+                </Link>
               </li>
             );
           })}

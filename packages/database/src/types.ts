@@ -688,9 +688,117 @@ export type Database = {
         };
         Relationships: [];
       };
+      shipments: {
+        Row: {
+          id: string;
+          order_id: string;
+          provider: string;
+          tracking_number: string | null;
+          label_url: string | null;
+          status: Database["public"]["Enums"]["shipment_status"];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          order_id: string;
+          provider?: string;
+          tracking_number?: string | null;
+          label_url?: string | null;
+          status?: Database["public"]["Enums"]["shipment_status"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          order_id?: string;
+          provider?: string;
+          tracking_number?: string | null;
+          label_url?: string | null;
+          status?: Database["public"]["Enums"]["shipment_status"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      shipping_events: {
+        Row: {
+          id: string;
+          shipment_id: string;
+          status: Database["public"]["Enums"]["shipment_status"];
+          note: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          shipment_id: string;
+          status: Database["public"]["Enums"]["shipment_status"];
+          note?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          shipment_id?: string;
+          status?: Database["public"]["Enums"]["shipment_status"];
+          note?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      disputes: {
+        Row: {
+          id: string;
+          order_id: string;
+          opener_id: string;
+          reason: Database["public"]["Enums"]["dispute_reason"];
+          details: string | null;
+          evidence_path: string | null;
+          status: Database["public"]["Enums"]["report_status"];
+          created_at: string;
+          resolved_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          order_id: string;
+          opener_id: string;
+          reason: Database["public"]["Enums"]["dispute_reason"];
+          details?: string | null;
+          evidence_path?: string | null;
+          status?: Database["public"]["Enums"]["report_status"];
+          created_at?: string;
+          resolved_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          order_id?: string;
+          opener_id?: string;
+          reason?: Database["public"]["Enums"]["dispute_reason"];
+          details?: string | null;
+          evidence_path?: string | null;
+          status?: Database["public"]["Enums"]["report_status"];
+          created_at?: string;
+          resolved_at?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
+      is_order_party: { Args: { in_order: string }; Returns: boolean };
+      mark_shipped: {
+        Args: { in_order: string; in_tracking: string; in_provider?: string };
+        Returns: undefined;
+      };
+      mark_delivered: { Args: { in_order: string }; Returns: undefined };
+      complete_order: { Args: { in_order: string }; Returns: undefined };
+      open_dispute: {
+        Args: {
+          in_order: string;
+          in_reason: Database["public"]["Enums"]["dispute_reason"];
+          in_details?: string | null;
+        };
+        Returns: string;
+      };
       compute_fees: {
         Args: { subtotal: number };
         Returns: { platform_fee: number; buyer_protection: number }[];
@@ -856,6 +964,20 @@ export type Database = {
         | "expired";
       chapter_status: "active" | "completed" | "paused" | "archived";
       report_status: "open" | "reviewing" | "resolved" | "dismissed";
+      shipment_status:
+        | "label_created"
+        | "dropped_off"
+        | "in_transit"
+        | "delivered"
+        | "exception"
+        | "lost"
+        | "returned";
+      dispute_reason:
+        | "item_never_arrived"
+        | "different_item"
+        | "major_damage"
+        | "counterfeit"
+        | "other";
       report_reason:
         | "doxxing"
         | "harassment"
@@ -923,3 +1045,7 @@ export type Message = Tables<"messages">;
 export type Order = Tables<"orders">;
 export type OrderItem = Tables<"order_items">;
 export type FeeRule = Tables<"fee_rules">;
+export type Shipment = Tables<"shipments">;
+export type ShipmentStatus = Enums<"shipment_status">;
+export type Dispute = Tables<"disputes">;
+export type DisputeReason = Enums<"dispute_reason">;
