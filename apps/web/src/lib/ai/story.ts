@@ -1,6 +1,6 @@
 import "server-only";
 
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import type { AiStoryAction } from "@owy/validation";
 
 // AI Story Assistant (implementation plan §4.3/§4.4). The user writes their own
@@ -8,15 +8,14 @@ import type { AiStoryAction } from "@owy/validation";
 // accusations, names, or motives. The original input is always retained
 // separately (stories.original_input) for audit/moderation.
 //
-// Gated on ANTHROPIC_API_KEY: with no key the feature is unavailable and the UI
-// falls back to "keep my words". Model defaults to Opus 4.8 (do not downgrade
-// for cost silently); override with OWY_AI_MODEL. No temperature/top_p — those
-// are removed on Opus 4.8 and 400.
+// Gated on OPENAI_API_KEY: with no key the feature is unavailable and the UI
+// falls back to "keep my words". Model defaults to a small, cheap model
+// (gpt-4o-mini) since this is a short rephrasing task; override with OWY_AI_MODEL.
 
-const MODEL = process.env.OWY_AI_MODEL || "claude-opus-4-8";
+const MODEL = process.env.OWY_AI_MODEL || "gpt-4o-mini";
 
 export function aiStoryConfigured(): boolean {
-  return Boolean(process.env.ANTHROPIC_API_KEY);
+  return Boolean(process.env.OPENAI_API_KEY);
 }
 
 const SYSTEM_PROMPT = `You help a seller rewrite a short, first-person story about why they are selling a personal object on a marketplace called "Once Was Yours".
@@ -49,25 +48,18 @@ export async function polishStory(
   }
 
   try {
-    const client = new Anthropic(); // reads ANTHROPIC_API_KEY
-    const message = await client.messages.create({
+    const client = new OpenAI(); // reads OPENAI_API_KEY
+    const completion = await client.chat.completions.create({
       model: MODEL,
       max_tokens: 1024, // stories are short; deliberately capped
-      system: SYSTEM_PROMPT,
+      temperature: 0.7,
       messages: [
-        {
-          role: "user",
-          content: `${ACTION_INSTRUCTION[action]}\n\nStory:\n${source}`,
-        },
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: `${ACTION_INSTRUCTION[action]}\n\nStory:\n${source}` },
       ],
     });
 
-    const text = message.content
-      .filter((b): b is Anthropic.TextBlock => b.type === "text")
-      .map((b) => b.text)
-      .join("")
-      .trim();
-
+    const text = completion.choices[0]?.message?.content?.trim();
     return { ok: true, text: text || source };
   } catch {
     return { ok: false, error: "The assistant couldn't rewrite that. Keep your words." };
