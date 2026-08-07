@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { recordEvent } from "@/lib/server/store";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function clientIp(req: NextRequest): string | undefined {
-  const fwd = req.headers.get("x-forwarded-for");
-  if (fwd) return fwd.split(",")[0]!.trim();
-  return req.headers.get("x-real-ip") ?? undefined;
-}
-
 export async function POST(req: NextRequest) {
+  const ip = clientIp(req);
+  const limit = rateLimit(`events:${ip}`, 120, 60_000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { ok: false, error: "rate_limited" },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfter) } },
+    );
+  }
+
   let body: unknown;
   try {
     body = await req.json();
@@ -37,7 +41,7 @@ export async function POST(req: NextRequest) {
         path: typeof b.path === "string" ? b.path : undefined,
         ts: typeof b.ts === "string" ? b.ts : undefined,
       },
-      { ip: clientIp(req), userAgent: req.headers.get("user-agent") ?? undefined },
+      { ip, userAgent: req.headers.get("user-agent") ?? undefined },
     );
   } catch {
     return NextResponse.json({ ok: false, error: "write_failed" }, { status: 500 });

@@ -3,6 +3,7 @@
 import { offerAmountSchema } from "@owy/validation";
 import { createClient } from "@/lib/supabase/server";
 import { emailUser, emailShell } from "@/lib/email";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type OfferResult = { ok: true } | { ok: false; error: string };
 
@@ -25,6 +26,9 @@ export async function makeOffer(input: {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sign in to make an offer." };
+  if (!rateLimit(`offer:${user.id}`, 10, 60_000).ok) {
+    return { ok: false, error: "You're making offers too fast. Try again in a moment." };
+  }
 
   const parsed = offerAmountSchema.safeParse(input.amount);
   if (!parsed.success) return { ok: false, error: "Enter a valid amount." };

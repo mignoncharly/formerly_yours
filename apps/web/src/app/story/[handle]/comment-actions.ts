@@ -2,6 +2,7 @@
 
 import { commentSchema, detectPII } from "@owy/validation";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type CommentView = {
   id: string;
@@ -35,6 +36,9 @@ export async function addComment(input: {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sign in to comment." };
+  if (!rateLimit(`comment:${user.id}`, 15, 60_000).ok) {
+    return { ok: false, error: "You're commenting too fast. Try again in a moment." };
+  }
 
   const parsed = commentSchema.safeParse({
     body: input.body,

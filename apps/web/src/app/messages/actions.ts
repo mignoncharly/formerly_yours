@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { messageSchema, detectOffPlatform } from "@owy/validation";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 // §8.1 — open (or resume) the buyer<->seller thread for a listing, then go to it.
 export async function startConversation(listingId: string): Promise<void> {
@@ -29,6 +30,9 @@ export async function sendMessage(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sign in to send messages." };
+  if (!rateLimit(`msg:${user.id}`, 20, 60_000).ok) {
+    return { ok: false, error: "You're sending messages too fast. Slow down a moment." };
+  }
 
   const parsed = messageSchema.safeParse({ body });
   if (!parsed.success) {

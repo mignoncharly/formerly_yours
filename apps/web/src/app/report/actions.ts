@@ -2,6 +2,7 @@
 
 import { reportCreateSchema } from "@owy/validation";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type ReportTarget = {
   storyId?: string;
@@ -24,6 +25,9 @@ export async function createReport(input: {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Sign in to report." };
+  if (!rateLimit(`report:${user.id}`, 10, 60_000).ok) {
+    return { ok: false, error: "You're reporting too fast. Try again in a moment." };
+  }
 
   const parsed = reportCreateSchema.safeParse({
     reason: input.reason,
