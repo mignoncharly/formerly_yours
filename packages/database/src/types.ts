@@ -720,6 +720,10 @@ export type Database = {
         Args: { in_user: string; in_enabled: boolean; in_kyc: string | null };
         Returns: undefined;
       };
+      set_seller_payouts_by_account: {
+        Args: { in_account: string; in_enabled: boolean; in_kyc: string | null };
+        Returns: undefined;
+      };
       get_seller_account: {
         Args: { in_user: string };
         Returns: {
