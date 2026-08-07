@@ -28,6 +28,7 @@ export type Database = {
           deactivated_at: string | null;
           is_verified: boolean;
           is_suspended: boolean;
+          role: Database["public"]["Enums"]["staff_role"];
           created_at: string;
           updated_at: string;
         };
@@ -44,6 +45,7 @@ export type Database = {
           deactivated_at?: string | null;
           is_verified?: boolean;
           is_suspended?: boolean;
+          role?: Database["public"]["Enums"]["staff_role"];
           created_at?: string;
           updated_at?: string;
         };
@@ -60,6 +62,7 @@ export type Database = {
           deactivated_at?: string | null;
           is_verified?: boolean;
           is_suspended?: boolean;
+          role?: Database["public"]["Enums"]["staff_role"];
           created_at?: string;
           updated_at?: string;
         };
@@ -454,9 +457,79 @@ export type Database = {
         };
         Relationships: [];
       };
+      blocked_users: {
+        Row: { blocker_id: string; blocked_id: string; created_at: string };
+        Insert: { blocker_id: string; blocked_id: string; created_at?: string };
+        Update: { blocker_id?: string; blocked_id?: string; created_at?: string };
+        Relationships: [];
+      };
+      reports: {
+        Row: {
+          id: string;
+          reporter_id: string;
+          story_id: string | null;
+          comment_id: string | null;
+          listing_id: string | null;
+          chapter_id: string | null;
+          reported_user_id: string | null;
+          reason: Database["public"]["Enums"]["report_reason"];
+          details: string | null;
+          status: Database["public"]["Enums"]["report_status"];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          reporter_id: string;
+          story_id?: string | null;
+          comment_id?: string | null;
+          listing_id?: string | null;
+          chapter_id?: string | null;
+          reported_user_id?: string | null;
+          reason: Database["public"]["Enums"]["report_reason"];
+          details?: string | null;
+          status?: Database["public"]["Enums"]["report_status"];
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          reporter_id?: string;
+          story_id?: string | null;
+          comment_id?: string | null;
+          listing_id?: string | null;
+          chapter_id?: string | null;
+          reported_user_id?: string | null;
+          reason?: Database["public"]["Enums"]["report_reason"];
+          details?: string | null;
+          status?: Database["public"]["Enums"]["report_status"];
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
+      is_staff: { Args: Record<string, never>; Returns: boolean };
+      moderate_content: {
+        Args: {
+          content_type: string;
+          content_id: string;
+          new_status: Database["public"]["Enums"]["moderation_status"];
+          reason?: string | null;
+        };
+        Returns: undefined;
+      };
+      suspend_user: {
+        Args: { target: string; suspended: boolean; reason?: string | null };
+        Returns: undefined;
+      };
+      resolve_report: {
+        Args: {
+          in_report: string;
+          new_status: Database["public"]["Enums"]["report_status"];
+          reason?: string | null;
+        };
+        Returns: undefined;
+      };
       chapter_progress: {
         Args: { in_chapter: string };
         Returns: { raised: number; items_sold: number }[];
@@ -550,6 +623,18 @@ export type Database = {
         | "expired";
       chapter_status: "active" | "completed" | "paused" | "archived";
       report_status: "open" | "reviewing" | "resolved" | "dismissed";
+      report_reason:
+        | "doxxing"
+        | "harassment"
+        | "threat"
+        | "spam"
+        | "stolen_item"
+        | "scam"
+        | "counterfeit"
+        | "explicit_content"
+        | "hate"
+        | "other";
+      staff_role: "user" | "support" | "moderator" | "admin" | "super_admin";
       reaction_type:
         | "dead"
         | "red_flag"
@@ -592,3 +677,7 @@ export type ChapterStatus = Enums<"chapter_status">;
 export type StoryMode = Enums<"story_mode">;
 export type IdentityVisibility = Enums<"identity_visibility">;
 export type ReactionType = Enums<"reaction_type">;
+export type Report = Tables<"reports">;
+export type ReportReason = Enums<"report_reason">;
+export type StaffRole = Enums<"staff_role">;
+export type BlockedUser = Tables<"blocked_users">;

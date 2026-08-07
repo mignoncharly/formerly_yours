@@ -235,3 +235,44 @@ export const chapterUpdateSchema = z.object({
   body: z.string().trim().min(3, "Say a little more.").max(2000),
 });
 export type ChapterUpdateInput = z.infer<typeof chapterUpdateSchema>;
+
+// ---------------------------------------------------------------------------
+// Trust & safety (§7).
+// ---------------------------------------------------------------------------
+export const reportReasonSchema = z.enum([
+  "doxxing",
+  "harassment",
+  "threat",
+  "spam",
+  "stolen_item",
+  "scam",
+  "counterfeit",
+  "explicit_content",
+  "hate",
+  "other",
+]);
+export type ReportReason = z.infer<typeof reportReasonSchema>;
+
+export const reportCreateSchema = z.object({
+  reason: reportReasonSchema,
+  details: optionalText(1000),
+});
+export type ReportCreateInput = z.infer<typeof reportCreateSchema>;
+
+// Lightweight PII scan (§7.2) — "Never expose theirs." Conservative patterns to
+// keep third-party contact details out of stories/comments. Not a substitute for
+// human moderation; it just blocks the obvious cases at write time.
+const PII_PATTERNS: { type: string; re: RegExp }[] = [
+  { type: "email", re: /[\w.+-]+@[\w-]+\.[\w.-]+/ },
+  // 7+ digits, optionally grouped by spaces/dashes/dots/parens (phone numbers)
+  { type: "phone", re: /(?:\+?\d[\d\s().-]{6,}\d)/ },
+  { type: "link", re: /(?:https?:\/\/|www\.)\S+/i },
+];
+
+export function detectPII(text: string): string[] {
+  const found = new Set<string>();
+  for (const { type, re } of PII_PATTERNS) {
+    if (re.test(text)) found.add(type);
+  }
+  return [...found];
+}
