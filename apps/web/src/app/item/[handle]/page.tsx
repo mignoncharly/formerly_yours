@@ -34,11 +34,18 @@ export async function generateMetadata({
   const { handle } = await params;
   const listing = await loadListing(handle);
   if (!listing) return { title: "Listing not found" };
+  const title = listing.title ?? "Listing";
+  const description = listing.description ?? undefined;
   return {
-    title: listing.title ?? "Listing",
-    description: listing.description ?? undefined,
+    title,
+    description,
+    alternates: { canonical: `${APP_URL}${listingPath(listing)}` },
+    openGraph: { title, description, type: "website" },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 export default async function ItemPage({
   params,
@@ -92,6 +99,24 @@ export default async function ItemPage({
 
   return (
     <main className="mx-auto min-h-dvh w-full max-w-2xl px-5 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: listing.title ?? undefined,
+            description: listing.description ?? undefined,
+            image: gallery[0]?.url ? [gallery[0].url] : undefined,
+            offers: {
+              "@type": "Offer",
+              price: (listing.price_amount ?? 0) / 100,
+              priceCurrency: listing.currency,
+              availability: "https://schema.org/InStock",
+            },
+          }),
+        }}
+      />
       {/* Gallery */}
       {gallery.length > 0 ? (
         <div className="mb-6 flex snap-x gap-3 overflow-x-auto">
