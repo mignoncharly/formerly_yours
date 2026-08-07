@@ -6,11 +6,18 @@ import { Button } from "@/components/ui";
 
 type Provider = "google" | "apple";
 
+// Base auth redirects on the configured app origin, not window.location.origin,
+// so links stay on production even if the page is ever loaded from a preview or
+// localhost origin. (Email confirm links are driven by Supabase's {{ .SiteURL }};
+// this keeps the OAuth callback and the `next` deep-link consistent with it.)
 function callbackUrl(path: string, next: string) {
+  const origin =
+    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ??
+    (typeof window !== "undefined" ? window.location.origin : "");
   const params = new URLSearchParams();
   if (next && next !== "/") params.set("next", next);
   const qs = params.toString();
-  return `${window.location.origin}${path}${qs ? `?${qs}` : ""}`;
+  return `${origin}${path}${qs ? `?${qs}` : ""}`;
 }
 
 export function SignInForm({
