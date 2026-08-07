@@ -592,9 +592,142 @@ export type Database = {
         };
         Relationships: [];
       };
+      fee_rules: {
+        Row: {
+          id: number;
+          is_active: boolean;
+          platform_fee_bps: number;
+          buyer_protection_bps: number;
+          min_platform_fee: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          is_active?: boolean;
+          platform_fee_bps: number;
+          buyer_protection_bps: number;
+          min_platform_fee?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          is_active?: boolean;
+          platform_fee_bps?: number;
+          buyer_protection_bps?: number;
+          min_platform_fee?: number;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      orders: {
+        Row: {
+          id: string;
+          buyer_id: string;
+          seller_id: string;
+          currency: string;
+          subtotal_amount: number;
+          buyer_fee_amount: number;
+          seller_fee_amount: number;
+          shipping_amount: number;
+          total_amount: number;
+          status: Database["public"]["Enums"]["order_status"];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          buyer_id: string;
+          seller_id: string;
+          currency?: string;
+          subtotal_amount: number;
+          buyer_fee_amount?: number;
+          seller_fee_amount?: number;
+          shipping_amount?: number;
+          total_amount: number;
+          status?: Database["public"]["Enums"]["order_status"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          buyer_id?: string;
+          seller_id?: string;
+          currency?: string;
+          subtotal_amount?: number;
+          buyer_fee_amount?: number;
+          seller_fee_amount?: number;
+          shipping_amount?: number;
+          total_amount?: number;
+          status?: Database["public"]["Enums"]["order_status"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      order_items: {
+        Row: {
+          id: string;
+          order_id: string;
+          listing_id: string;
+          price_amount: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          order_id: string;
+          listing_id: string;
+          price_amount: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          order_id?: string;
+          listing_id?: string;
+          price_amount?: number;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
+      compute_fees: {
+        Args: { subtotal: number };
+        Returns: { platform_fee: number; buyer_protection: number }[];
+      };
+      create_pending_order: {
+        Args: { in_listing: string; in_buyer: string };
+        Returns: {
+          order_id: string;
+          total: number;
+          seller_id: string;
+          stripe_account: string | null;
+        }[];
+      };
+      attach_payment_session: {
+        Args: { in_order: string; in_session: string };
+        Returns: undefined;
+      };
+      confirm_order_paid: {
+        Args: { in_session: string; in_intent: string };
+        Returns: undefined;
+      };
+      upsert_seller_stripe_account: {
+        Args: { in_user: string; in_account: string };
+        Returns: undefined;
+      };
+      set_seller_payouts: {
+        Args: { in_user: string; in_enabled: boolean; in_kyc: string | null };
+        Returns: undefined;
+      };
+      get_seller_account: {
+        Args: { in_user: string };
+        Returns: {
+          stripe_account_id: string | null;
+          payouts_enabled: boolean;
+          kyc_status: string | null;
+        }[];
+      };
       is_conversation_member: { Args: { conv: string }; Returns: boolean };
       start_conversation: { Args: { in_listing: string }; Returns: string };
       accept_offer: { Args: { in_offer: string }; Returns: undefined };
@@ -783,3 +916,6 @@ export type Offer = Tables<"offers">;
 export type OfferStatus = Enums<"offer_status">;
 export type Conversation = Tables<"conversations">;
 export type Message = Tables<"messages">;
+export type Order = Tables<"orders">;
+export type OrderItem = Tables<"order_items">;
+export type FeeRule = Tables<"fee_rules">;
