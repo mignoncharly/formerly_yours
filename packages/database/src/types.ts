@@ -505,9 +505,105 @@ export type Database = {
         };
         Relationships: [];
       };
+      offers: {
+        Row: {
+          id: string;
+          listing_id: string;
+          buyer_id: string;
+          seller_id: string;
+          proposed_by: string;
+          parent_offer_id: string | null;
+          amount: number;
+          status: Database["public"]["Enums"]["offer_status"];
+          expires_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          listing_id: string;
+          buyer_id: string;
+          seller_id: string;
+          proposed_by: string;
+          parent_offer_id?: string | null;
+          amount: number;
+          status?: Database["public"]["Enums"]["offer_status"];
+          expires_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          listing_id?: string;
+          buyer_id?: string;
+          seller_id?: string;
+          proposed_by?: string;
+          parent_offer_id?: string | null;
+          amount?: number;
+          status?: Database["public"]["Enums"]["offer_status"];
+          expires_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      conversations: {
+        Row: { id: string; listing_id: string | null; created_at: string };
+        Insert: { id?: string; listing_id?: string | null; created_at?: string };
+        Update: { id?: string; listing_id?: string | null; created_at?: string };
+        Relationships: [];
+      };
+      conversation_members: {
+        Row: { conversation_id: string; user_id: string; joined_at: string };
+        Insert: { conversation_id: string; user_id: string; joined_at?: string };
+        Update: { conversation_id?: string; user_id?: string; joined_at?: string };
+        Relationships: [];
+      };
+      messages: {
+        Row: {
+          id: string;
+          conversation_id: string;
+          sender_id: string;
+          body: string | null;
+          attachment_path: string | null;
+          created_at: string;
+          edited_at: string | null;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          conversation_id: string;
+          sender_id: string;
+          body?: string | null;
+          attachment_path?: string | null;
+          created_at?: string;
+          edited_at?: string | null;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          conversation_id?: string;
+          sender_id?: string;
+          body?: string | null;
+          attachment_path?: string | null;
+          created_at?: string;
+          edited_at?: string | null;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
+      is_conversation_member: { Args: { conv: string }; Returns: boolean };
+      start_conversation: { Args: { in_listing: string }; Returns: string };
+      accept_offer: { Args: { in_offer: string }; Returns: undefined };
+      decline_offer: { Args: { in_offer: string }; Returns: undefined };
+      withdraw_offer: { Args: { in_offer: string }; Returns: undefined };
+      counter_offer: {
+        Args: { in_offer: string; new_amount: number };
+        Returns: string;
+      };
       is_staff: { Args: Record<string, never>; Returns: boolean };
       moderate_content: {
         Args: {
@@ -683,3 +779,7 @@ export type ReportStatus = Enums<"report_status">;
 export type StaffRole = Enums<"staff_role">;
 export type BlockedUser = Tables<"blocked_users">;
 export type ModerationStatus = Enums<"moderation_status">;
+export type Offer = Tables<"offers">;
+export type OfferStatus = Enums<"offer_status">;
+export type Conversation = Tables<"conversations">;
+export type Message = Tables<"messages">;

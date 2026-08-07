@@ -276,3 +276,21 @@ export function detectPII(text: string): string[] {
   }
   return [...found];
 }
+
+// ---------------------------------------------------------------------------
+// Messaging + offers (§8). Offer amounts in integer minor units.
+// ---------------------------------------------------------------------------
+export const messageSchema = z.object({
+  body: z.string().trim().min(1, "Say something.").max(2000, "Keep it under 2000 characters."),
+});
+export type MessageInput = z.infer<typeof messageSchema>;
+
+export const offerAmountSchema = priceMinorSchema;
+
+// Off-platform payment attempts to warn about (§8.3).
+const OFF_PLATFORM_RE =
+  /\b(paypal|venmo|cash\s?app|zelle|revolut|western union|bank transfer|iban|bitcoin|btc|crypto|wire transfer)\b/i;
+
+export function detectOffPlatform(text: string): boolean {
+  return OFF_PLATFORM_RE.test(text) || detectPII(text).includes("phone") || detectPII(text).includes("email");
+}
