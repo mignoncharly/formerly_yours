@@ -78,6 +78,10 @@ export function track(
 
   const body = JSON.stringify(payload);
 
+  // §11.5 — mirror to PostHog when configured (no-op until a key is set), so we
+  // keep the self-hosted JSONL log AND get a real product-analytics backend.
+  forwardToPostHog(event, payload.properties, payload.visitorId, payload.ts);
+
   try {
     // sendBeacon survives page unloads (important for CTA click -> navigation).
     if (navigator.sendBeacon) {
@@ -97,4 +101,36 @@ export function track(
   }).catch(() => {
     /* validation analytics are best-effort */
   });
+}
+
+// PostHog is gated behind NEXT_PUBLIC_POSTHOG_KEY (like the AI features): absent
+// key => this does nothing. Uses the dependency-free HTTP capture endpoint so we
+// don't ship posthog-js in the bundle.
+function forwardToPostHog(
+  event: string,
+  properties: Record<string, unknown>,
+  distinctId: string,
+  ts: string,
+): void {
+  const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+  if (!key) return;
+  const host = process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://eu.i.posthog.com";
+  try {
+    void fetch(`${host.replace(/\/$/, "")}/capture/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        api_key: key,
+        event,
+        distinct_id: distinctId,
+        properties: { ...properties, $current_url: window.location.href },
+        timestamp: ts,
+      }),
+      keepalive: true,
+    }).catch(() => {
+      /* best-effort */
+    });
+  } catch {
+    /* best-effort */
+  }
 }

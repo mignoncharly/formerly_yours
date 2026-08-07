@@ -301,6 +301,30 @@ export type Database = {
         Update: { story_id?: string; context_id?: number };
         Relationships: [];
       };
+      feature_flags: {
+        Row: {
+          key: string;
+          description: string;
+          enabled: boolean;
+          rollout_percent: number;
+          updated_at: string;
+        };
+        Insert: {
+          key: string;
+          description?: string;
+          enabled?: boolean;
+          rollout_percent?: number;
+          updated_at?: string;
+        };
+        Update: {
+          key?: string;
+          description?: string;
+          enabled?: boolean;
+          rollout_percent?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       hall_of_fame_categories: {
         Row: {
           key: string;
@@ -974,6 +998,10 @@ export type Database = {
       };
       story_is_visible: {
         Args: { sid: string };
+        Returns: boolean;
+      };
+      feature_flag_enabled: {
+        Args: { flag_key: string; subject?: string | null };
         Returns: boolean;
       };
     };
