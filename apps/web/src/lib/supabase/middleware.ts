@@ -20,6 +20,7 @@ const PROTECTED_PREFIXES = [
   "/moderation",
   "/messages",
   "/offers",
+  "/orders",
   "/onboarding",
 ];
 

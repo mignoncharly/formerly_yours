@@ -6,6 +6,7 @@ import { parsePriceToMinor } from "@owy/validation";
 import { Button } from "@/components/ui";
 import { makeOffer } from "@/app/offers/actions";
 import { startConversation } from "@/app/messages/actions";
+import { startCheckout } from "@/app/checkout/actions";
 
 export function BuyerActions({
   listingId,
@@ -55,10 +56,25 @@ export function BuyerActions({
     await startConversation(listingId); // redirects to the thread
   }
 
+  async function buyNow() {
+    if (!requireAuth()) return;
+    setBusy(true);
+    setMsg(null);
+    try {
+      await startCheckout(listingId); // redirects to Stripe Checkout
+    } catch (e) {
+      setBusy(false);
+      setMsg(e instanceof Error ? e.message : "Could not start checkout.");
+    }
+  }
+
   return (
     <div className="mt-5 flex flex-col gap-3">
+      <Button type="button" onClick={buyNow} disabled={busy}>
+        Buy now
+      </Button>
       <div className="flex gap-3">
-        <Button type="button" onClick={() => (offering ? submitOffer() : setOffering(true))} disabled={busy}>
+        <Button type="button" variant="ghost" onClick={() => (offering ? submitOffer() : setOffering(true))} disabled={busy}>
           {offering ? "Send offer" : "Make an offer"}
         </Button>
         <Button type="button" variant="ghost" onClick={message} disabled={busy}>
