@@ -22,6 +22,7 @@ const PROTECTED_PREFIXES = [
   "/offers",
   "/orders",
   "/onboarding",
+  "/notifications",
 ];
 
 // Auth entry points — a signed-in user should not see these.

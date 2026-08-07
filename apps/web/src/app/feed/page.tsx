@@ -6,6 +6,7 @@ import { getSignedThumbnails } from "@/lib/listing-images";
 import { FeedCard } from "@/components/feed/FeedCard";
 import { FeedImpression } from "@/components/feed/FeedImpression";
 import { BottomNav } from "@/components/BottomNav";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export const metadata: Metadata = {
   title: "Feed",
@@ -67,6 +68,7 @@ export default async function FeedPage({
           <Link href="/sell" className="text-sm text-[var(--color-muted)] underline underline-offset-4">
             Sell →
           </Link>
+          <NotificationBell />
         </div>
       </div>
 

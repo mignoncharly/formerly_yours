@@ -301,6 +301,42 @@ export type Database = {
         Update: { story_id?: string; context_id?: number };
         Relationships: [];
       };
+      notifications: {
+        Row: {
+          id: string;
+          recipient_id: string;
+          actor_id: string | null;
+          type: Database["public"]["Enums"]["notification_type"];
+          entity_type: string | null;
+          entity_id: string | null;
+          link: string | null;
+          read_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          recipient_id: string;
+          actor_id?: string | null;
+          type: Database["public"]["Enums"]["notification_type"];
+          entity_type?: string | null;
+          entity_id?: string | null;
+          link?: string | null;
+          read_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          recipient_id?: string;
+          actor_id?: string | null;
+          type?: Database["public"]["Enums"]["notification_type"];
+          entity_type?: string | null;
+          entity_id?: string | null;
+          link?: string | null;
+          read_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       feature_flags: {
         Row: {
           key: string;
@@ -1004,6 +1040,10 @@ export type Database = {
         Args: { flag_key: string; subject?: string | null };
         Returns: boolean;
       };
+      mark_notifications_read: {
+        Args: { ids?: string[] | null };
+        Returns: number;
+      };
     };
     Enums: {
       profile_intent: "sell" | "browse" | "both";
@@ -1076,6 +1116,15 @@ export type Database = {
         | "good_for_you"
         | "sending_love"
         | "savage";
+      notification_type:
+        | "offer_received"
+        | "offer_accepted"
+        | "offer_declined"
+        | "message_received"
+        | "sale"
+        | "story_reaction"
+        | "story_comment"
+        | "new_follower";
     };
   };
 };
