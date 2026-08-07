@@ -12,7 +12,7 @@ import type { Database } from "@owy/database/types";
 // ---------------------------------------------------------------------------
 
 // Routes that require an authenticated user.
-const PROTECTED_PREFIXES = ["/account", "/sell", "/onboarding"];
+const PROTECTED_PREFIXES = ["/account", "/sell", "/saved", "/onboarding"];
 
 // Auth entry points — a signed-in user should not see these.
 const AUTH_ROUTES = ["/sign-in"];
