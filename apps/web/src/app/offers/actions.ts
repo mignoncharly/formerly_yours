@@ -2,6 +2,7 @@
 
 import { offerAmountSchema } from "@owy/validation";
 import { createClient } from "@/lib/supabase/server";
+import { emailUser, emailShell } from "@/lib/email";
 
 export type OfferResult = { ok: true } | { ok: false; error: string };
 
@@ -41,12 +42,46 @@ export async function makeOffer(input: {
     .select("id")
     .single();
   if (error || !data) return { ok: false, error: "Could not send the offer." };
+
+  // Transactional email (best-effort, no-op without RESEND_API_KEY). Offers are
+  // low-frequency + high-value, so they warrant email; chat does not.
+  void emailUser(
+    input.sellerId,
+    "You have a new offer — Once Was Yours",
+    emailShell(
+      "You have a new offer",
+      "Someone just made an offer on one of your listings. Open Once Was Yours to accept, counter, or decline.",
+      "View the offer",
+      "/offers",
+    ),
+  );
   return { ok: true, id: data.id };
 }
 
 export async function acceptOffer(id: string): Promise<OfferResult> {
   const supabase = await createClient();
-  return rpcResult(supabase.rpc("accept_offer", { in_offer: id }));
+  const result = await rpcResult(supabase.rpc("accept_offer", { in_offer: id }));
+  if (result.ok) {
+    // Notify the buyer their offer was accepted (best-effort, gated on key).
+    const { data: offer } = await supabase
+      .from("offers")
+      .select("buyer_id")
+      .eq("id", id)
+      .maybeSingle();
+    if (offer?.buyer_id) {
+      void emailUser(
+        offer.buyer_id,
+        "Your offer was accepted — Once Was Yours",
+        emailShell(
+          "Your offer was accepted",
+          "Good news — the seller accepted your offer. Complete checkout to secure the item before someone else does.",
+          "Go to your offers",
+          "/offers",
+        ),
+      );
+    }
+  }
+  return result;
 }
 
 export async function declineOffer(id: string): Promise<OfferResult> {
