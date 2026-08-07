@@ -56,3 +56,8 @@ export function shortIdFromHandle(handle: string): string {
   const parts = handle.split("-");
   return parts[parts.length - 1] ?? handle;
 }
+
+/** Canonical story path: /story/[slug]-[shortId] (slug from the item title). */
+export function storyPath(shortId: string, title: string | null): string {
+  return `/story/${slugify(title)}-${shortId}`;
+}

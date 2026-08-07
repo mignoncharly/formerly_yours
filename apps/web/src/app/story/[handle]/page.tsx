@@ -13,6 +13,7 @@ import {
 import { StoryReactions } from "./StoryReactions";
 import { StoryComments } from "./StoryComments";
 import { StoryShare } from "./StoryShare";
+import { FollowButton } from "./FollowButton";
 import type { CommentView } from "./comment-actions";
 
 async function loadStory(handle: string) {
@@ -125,6 +126,18 @@ export default async function StoryPage({
     }
   }
 
+  // Follow state (only meaningful when the author's identity is public).
+  let isFollowing = false;
+  if (user && story.visibility === "public" && user.id !== story.author_id) {
+    const { data: f } = await supabase
+      .from("follows")
+      .select("follower_id")
+      .eq("follower_id", user.id)
+      .eq("followed_id", story.author_id)
+      .maybeSingle();
+    isFollowing = !!f;
+  }
+
   const tags = tagList ?? [];
   const itemHandle = listing ? listingPath({ title: listing.title, short_id: listing.short_id }) : null;
 
@@ -199,6 +212,22 @@ export default async function StoryPage({
       </div>
 
       <StoryShare title={story.headline ?? "A story on Once Was Yours"} />
+
+      {story.visibility === "public" && (
+        <div className="mt-6 flex items-center justify-between">
+          <span className="text-sm text-[var(--color-muted)]">
+            By <span className="text-[var(--color-paper)]">{sellerLine}</span>
+          </span>
+          {user && user.id !== story.author_id && (
+            <FollowButton
+              followedId={story.author_id}
+              initialFollowing={isFollowing}
+              signedIn={!!user}
+              next={`/story/${handle}`}
+            />
+          )}
+        </div>
+      )}
 
       {/* The object */}
       {listing && itemHandle && (
