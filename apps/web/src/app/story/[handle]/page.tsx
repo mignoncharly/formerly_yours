@@ -11,6 +11,9 @@ import {
   shortIdFromHandle,
 } from "@/lib/listings";
 import { StoryReactions } from "./StoryReactions";
+import { StoryComments } from "./StoryComments";
+import { StoryShare } from "./StoryShare";
+import type { CommentView } from "./comment-actions";
 
 async function loadStory(handle: string) {
   const supabase = await createClient();
@@ -31,9 +34,13 @@ export async function generateMetadata({
   const { handle } = await params;
   const story = await loadStory(handle);
   if (!story) return { title: "Story not found" };
+  const title = story.headline ?? "A story on Once Was Yours";
+  const description = story.body?.slice(0, 160) ?? undefined;
   return {
-    title: story.headline ?? "A story on Once Was Yours",
-    description: story.body?.slice(0, 160) ?? undefined,
+    title,
+    description,
+    openGraph: { title, description, type: "article" },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
@@ -121,6 +128,29 @@ export default async function StoryPage({
   const tags = tagList ?? [];
   const itemHandle = listing ? listingPath({ title: listing.title, short_id: listing.short_id }) : null;
 
+  // Comments (§4.7) — author names are public.
+  const { data: commentRows } = await supabase
+    .from("comments")
+    .select("id, author_id, parent_comment_id, body, created_at, edited_at")
+    .eq("story_id", story.id)
+    .order("created_at", { ascending: true });
+  const commentAuthorIds = [...new Set((commentRows ?? []).map((c) => c.author_id))];
+  const { data: commentAuthors } = commentAuthorIds.length
+    ? await admin.from("profiles").select("id, username, display_name").in("id", commentAuthorIds)
+    : { data: [] };
+  const nameById = new Map(
+    (commentAuthors ?? []).map((a) => [a.id, a.display_name?.trim() || a.username || "Someone"]),
+  );
+  const initialComments: CommentView[] = (commentRows ?? []).map((c) => ({
+    id: c.id,
+    body: c.body,
+    parentCommentId: c.parent_comment_id,
+    authorId: c.author_id,
+    authorName: nameById.get(c.author_id) ?? "Someone",
+    createdAt: c.created_at,
+    editedAt: c.edited_at,
+  }));
+
   return (
     <main className="mx-auto min-h-dvh w-full max-w-2xl px-5 py-8">
       {heroUrl ? (
@@ -168,6 +198,8 @@ export default async function StoryPage({
         />
       </div>
 
+      <StoryShare title={story.headline ?? "A story on Once Was Yours"} />
+
       {/* The object */}
       {listing && itemHandle && (
         <Link href={itemHandle} className="mt-8 block">
@@ -185,10 +217,13 @@ export default async function StoryPage({
         </Link>
       )}
 
-      {/* Comments arrive next (§4.7). */}
-      <p className="mt-8 text-center text-sm text-[var(--color-muted)]">
-        Comments are coming soon.
-      </p>
+      <StoryComments
+        storyId={story.id}
+        initialComments={initialComments}
+        currentUserId={user?.id ?? null}
+        signedIn={!!user}
+        next={`/story/${handle}`}
+      />
     </main>
   );
 }
