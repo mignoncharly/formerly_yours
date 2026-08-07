@@ -13,6 +13,12 @@ next-env.d.ts
 # turbo
 .turbo/
 
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 # local validation data (Phase 0 waitlist + analytics events)
 data/
 **/data/*.jsonl

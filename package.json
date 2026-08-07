@@ -16,12 +16,14 @@
     "web:dev": "pnpm --filter @owy/web dev",
     "web:build": "pnpm --filter @owy/web build",
     "test:security": "node --test 'tests/security/*.test.mjs'",
+    "test:e2e": "playwright test",
     "db:migrate": "node scripts/db-migrate.mjs",
     "db:push": "supabase db push",
     "db:diff": "supabase db diff",
     "db:reset": "supabase db reset"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "pg": "^8.22.0",
     "rimraf": "^6.0.1",
     "turbo": "^2.3.3"
