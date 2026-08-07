@@ -349,9 +349,53 @@ export type Database = {
         };
         Relationships: [];
       };
+      follows: {
+        Row: {
+          follower_id: string;
+          followed_id: string;
+          created_at: string;
+        };
+        Insert: {
+          follower_id: string;
+          followed_id: string;
+          created_at?: string;
+        };
+        Update: {
+          follower_id?: string;
+          followed_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
+      feed_stories: {
+        Args: {
+          viewer?: string | null;
+          following_only?: boolean | null;
+          lim?: number | null;
+          off?: number | null;
+        };
+        Returns: {
+          story_id: string;
+          story_short_id: string;
+          headline: string | null;
+          body: string | null;
+          visibility: Database["public"]["Enums"]["identity_visibility"];
+          published_at: string | null;
+          author_id: string;
+          listing_id: string;
+          listing_short_id: string;
+          listing_title: string | null;
+          price_amount: number | null;
+          currency: string;
+          reaction_count: number;
+          comment_count: number;
+          save_count: number;
+          score: number;
+        }[];
+      };
       search_listings: {
         Args: {
           q?: string | null;
@@ -450,6 +494,7 @@ export type Story = Tables<"stories">;
 export type RelationshipContext = Tables<"relationship_contexts">;
 export type StoryReaction = Tables<"story_reactions">;
 export type Comment = Tables<"comments">;
+export type Follow = Tables<"follows">;
 export type StoryMode = Enums<"story_mode">;
 export type IdentityVisibility = Enums<"identity_visibility">;
 export type ReactionType = Enums<"reaction_type">;
