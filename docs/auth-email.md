@@ -12,7 +12,7 @@ passed by the browser — so signing up from a `localhost:3000` dev session prod
 a localhost link.
 
 Current state (correct):
-- **Site URL** = `https://oncewasyours.gestionatech.de`.
+- **Site URL** = `https://oncewasyours.com`.
 - Custom confirmation / magic-link templates link to
   `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email` — i.e. the
   production origin, independent of where signup happened.
@@ -69,7 +69,7 @@ not by a broken record. Levers, in order of impact:
    `gestionatech.de` is confirmed aligned. ⚠️ `gestionatech.de` is a shared org
    domain used by other live apps on the same box; this is an org-wide DNS change,
    so verify the others first. Do **not** change it unilaterally.
-3. **Optional — dedicated sending identity** (e.g. `noreply@mail.oncewasyours.gestionatech.de`
+3. **Optional — dedicated sending identity** (e.g. `noreply@mail.oncewasyours.com`
    with its own SPF/DKIM in Zoho) isolates this app's reputation from the shared
    `info@` mailbox. Requires Zoho admin + DNS.
 

@@ -67,7 +67,7 @@ OWY_NOTIF_RETENTION_DAYS=120 ./scripts/cleanup-cron.sh
 ## Health checks
 
 - Service: `systemctl status oncewasyours` · logs `journalctl -u oncewasyours -f`.
-- Manual liveness: `curl -sI https://oncewasyours.gestionatech.de | head -1`.
+- Manual liveness: `curl -sI https://oncewasyours.com | head -1`.
 - Errors: Sentry (org `gestiona-tech`, project `oncewasyours`) — captures app
   runtime errors plus cron-job failures raised by `sentry-notify.mjs`.
 

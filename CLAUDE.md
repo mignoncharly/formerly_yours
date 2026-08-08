@@ -14,7 +14,7 @@ phase notes in `docs/phase-0.md`, `docs/phase-1.md`.
 
 ## Environments
 - **Prod/staging server**: IONOS VPS `217.154.166.155`, repo at
-  `~/apps/oncewasyours`, domain `oncewasyours.gestionatech.de`. It's a **shared
+  `~/apps/oncewasyours`, domain `oncewasyours.com`. It's a **shared
   box** with other live apps. System Node is **18 — do NOT change it**; this app
   uses an **isolated nvm Node 22**. Deploy = standalone build + systemd + nginx;
   `./scripts/deploy.sh` (see `docs/deployment.md`). The server runs `main`.

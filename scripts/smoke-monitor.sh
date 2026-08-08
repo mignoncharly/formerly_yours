@@ -19,7 +19,7 @@ LOG="$LOG_DIR/smoke-monitor.log"
 RUN_LOG="$(mktemp)"
 trap 'rm -f "$RUN_LOG"' EXIT
 
-BASE_URL="${PLAYWRIGHT_BASE_URL:-https://oncewasyours.gestionatech.de}"
+BASE_URL="${PLAYWRIGHT_BASE_URL:-https://oncewasyours.com}"
 TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 # Isolated nvm Node 22 (system Node is 18 on this shared box — do not use it).

@@ -30,7 +30,7 @@ const repoRoot = join(__dirname, "..");
 
 const PAT = process.env.SUPABASE_ACCESS_TOKEN;
 const REF = process.env.SUPABASE_PROJECT_REF ?? "xcsgsbtyumkqyjznesyy";
-const APP_URL = (process.env.APP_URL ?? "https://oncewasyours.gestionatech.de").replace(/\/$/, "");
+const APP_URL = (process.env.APP_URL ?? "https://oncewasyours.com").replace(/\/$/, "");
 
 if (!PAT) {
   console.error("Missing SUPABASE_ACCESS_TOKEN (Supabase Management PAT). Aborting.");

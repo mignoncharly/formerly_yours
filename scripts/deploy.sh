@@ -8,7 +8,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 nvm use 22 >/dev/null
 
-APP_URL="${NEXT_PUBLIC_APP_URL:-https://oncewasyours.gestionatech.de}"
+APP_URL="${NEXT_PUBLIC_APP_URL:-https://oncewasyours.com}"
 SERVICE="${SERVICE:-oncewasyours}"
 cd "$(dirname "$0")/.."
 
@@ -35,4 +35,4 @@ echo "==> Restarting service (needs sudo)"
 sudo systemctl restart "$SERVICE"
 sleep 1
 sudo systemctl --no-pager --lines=5 status "$SERVICE" || true
-echo "==> Done. https://oncewasyours.gestionatech.de"
+echo "==> Done. https://oncewasyours.com"

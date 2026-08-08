@@ -6,7 +6,7 @@ import { buildProvider, sendWithRetry } from "./core";
 export type { EmailMessage, EmailProvider, EmailSendResult } from "./types";
 
 const APP_URL = (
-  process.env.NEXT_PUBLIC_APP_URL ?? "https://oncewasyours.gestionatech.de"
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://oncewasyours.com"
 ).replace(/\/$/, "");
 
 // Transactional-email categories map 1:1 to notification_preferences columns.

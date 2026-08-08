@@ -1,6 +1,6 @@
 # Deployment — Ubuntu VPS (IONOS)
 
-Once Was Yours ships first to **`oncewasyours.gestionatech.de`** on the shared
+Once Was Yours ships first to **`oncewasyours.com`** on the shared
 IONOS VPS **`217.154.166.155`**, under `~/apps/oncewasyours`, alongside the other
 apps (Django `frisivo`/`gtech`, Node `opendatajobradar`, …). It runs as a
 **Next.js standalone** Node server behind the box's existing **nginx**.
@@ -49,10 +49,10 @@ sudo nginx -t && sudo systemctl reload nginx
 ## 3. HTTPS (after DNS propagates)  ← sudo
 
 ```bash
-sudo certbot --nginx -d oncewasyours.gestionatech.de
+sudo certbot --nginx -d oncewasyours.com
 ```
 
-Then visit **https://oncewasyours.gestionatech.de**.
+Then visit **https://oncewasyours.com**.
 
 ## First-time server bootstrap (already done — for reference)
 
@@ -69,7 +69,7 @@ cd ~/apps/oncewasyours
 cp apps/web/.env.example apps/web/.env.local   # fill Supabase + Sentry + OWY_* values
 mkdir -p data
 pnpm install --frozen-lockfile
-NEXT_PUBLIC_APP_URL=https://oncewasyours.gestionatech.de pnpm build
+NEXT_PUBLIC_APP_URL=https://oncewasyours.com pnpm build
 # stage standalone assets:
 S=apps/web/.next/standalone/apps/web
 cp -r apps/web/.next/static "$S/.next/static"
@@ -90,7 +90,7 @@ with the current Node path, and `sudo systemctl restart oncewasyours`.
 ```bash
 # OWY_ADMIN_KEY is in apps/web/.env.local (never printed):
 KEY=$(grep '^OWY_ADMIN_KEY=' ~/apps/oncewasyours/apps/web/.env.local | cut -d= -f2)
-curl "https://oncewasyours.gestionatech.de/api/stats?key=$KEY" | jq
+curl "https://oncewasyours.com/api/stats?key=$KEY" | jq
 wc -l ~/apps/oncewasyours/data/waitlist.jsonl
 ```
 

@@ -11,7 +11,7 @@ foundation, CI, design system and PWA.
 - 📄 Product vision, data model & 12-phase plan: [`docs/planning/`](docs/planning) (source PDFs)
 - 🧪 Phase 0 (validation): [`docs/phase-0.md`](docs/phase-0.md)
 - 🧱 Phase 1 (foundation): [`docs/phase-1.md`](docs/phase-1.md)
-- 🚀 Deployment (IONOS VPS → `oncewasyours.gestionatech.de`): [`docs/deployment.md`](docs/deployment.md)
+- 🚀 Deployment (IONOS VPS → `oncewasyours.com`): [`docs/deployment.md`](docs/deployment.md)
 - 🏷️ Brand checklist: [`docs/brand-validation.md`](docs/brand-validation.md)
 
 ## Stack

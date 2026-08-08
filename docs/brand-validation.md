@@ -13,7 +13,7 @@ we know it is legally and practically available across the surfaces we need.
 | Field | Value |
 | --- | --- |
 | Chosen name | **Once Was Yours** |
-| Domain in use | oncewasyours.gestionatech.de (staging subdomain) |
+| Domain in use | oncewasyours.com (staging subdomain) |
 | Tagline | *Sell the past. Fund what's next.* |
 | Positioning | Story-commerce marketplace + "Next Chapter" funding |
 | Alternatives (warm) | *Formerly Yours*, *Next Chapter*, *The Past Tense*, *Afterglow* |

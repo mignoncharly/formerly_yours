@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 // Smoke tests run against a live deployment (default: production). Override with
 // PLAYWRIGHT_BASE_URL to point at a preview or a locally-served build.
-const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "https://oncewasyours.gestionatech.de";
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "https://oncewasyours.com";
 
 export default defineConfig({
   testDir: "./tests/e2e",

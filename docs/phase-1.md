@@ -94,7 +94,7 @@ Verified: `pnpm build` ✅ (Sentry + Turbopack) and `pnpm typecheck` (all packag
    `dsn=https://…@…ingest.…sentry.io/…` to `docs/sentry_keys.md` (git-ignored) and
    I'll wire it in; or paste it and I'll store it. Find it in Sentry →
    Settings → Projects → oncewasyours → Client Keys (DSN).
-2. **Deploy to the VPS** at `oncewasyours.gestionatech.de` — follow
+2. **Deploy to the VPS** at `oncewasyours.com` — follow
    [`docs/deployment.md`](deployment.md) (DNS A record + systemd + nginx + certbot).
    This turns "staging" green.
 3. Later: separate Supabase **staging/production** projects (the current one is
