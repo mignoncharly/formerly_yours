@@ -7,6 +7,8 @@
 //     are derived from source events (offers/sales/…) and already seen.
 //   - email_deliveries audit rows older than OWY_EMAIL_LEDGER_RETENTION_DAYS
 //     (default 180). The dedup window has long passed.
+//   - stripe_events audit rows older than OWY_STRIPE_EVENTS_RETENTION_DAYS
+//     (default 180). Stripe stops retrying long before this.
 //
 // Connection: reads password + project_id from the git-ignored secrets file
 // (default docs/supabase_sentry_keys.md) via the IPv4 session pooler. Nothing
@@ -18,6 +20,7 @@ import pg from "pg";
 const SECRETS_FILE = process.env.OWY_SECRETS_FILE ?? "docs/supabase_sentry_keys.md";
 const NOTIF_DAYS = Number(process.env.OWY_NOTIF_RETENTION_DAYS ?? 90);
 const EMAIL_DAYS = Number(process.env.OWY_EMAIL_LEDGER_RETENTION_DAYS ?? 180);
+const STRIPE_DAYS = Number(process.env.OWY_STRIPE_EVENTS_RETENTION_DAYS ?? 180);
 
 function parseKV(file) {
   const out = {};
@@ -62,10 +65,16 @@ async function main() {
        where created_at < now() - ($1 || ' days')::interval`,
       [String(EMAIL_DAYS)],
     );
+    const stripeEv = await client.query(
+      `delete from public.stripe_events
+       where processed_at < now() - ($1 || ' days')::interval`,
+      [String(STRIPE_DAYS)],
+    );
     await client.query("commit");
     console.log(
       `${ts()} cleanup OK: notifications=${notif.rowCount} (>${NOTIF_DAYS}d read), ` +
-        `email_deliveries=${email.rowCount} (>${EMAIL_DAYS}d)`,
+        `email_deliveries=${email.rowCount} (>${EMAIL_DAYS}d), ` +
+        `stripe_events=${stripeEv.rowCount} (>${STRIPE_DAYS}d)`,
     );
   } catch (err) {
     await client.query("rollback").catch(() => {});

@@ -400,6 +400,24 @@ export type Database = {
         };
         Relationships: [];
       };
+      stripe_events: {
+        Row: {
+          id: string;
+          type: string;
+          processed_at: string;
+        };
+        Insert: {
+          id: string;
+          type: string;
+          processed_at?: string;
+        };
+        Update: {
+          id?: string;
+          type?: string;
+          processed_at?: string;
+        };
+        Relationships: [];
+      };
       feature_flags: {
         Row: {
           key: string;
