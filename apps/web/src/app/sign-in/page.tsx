@@ -55,7 +55,15 @@ export default async function SignInPage({
         </Card>
 
         <p className="mt-6 text-center text-xs text-[var(--color-muted)]">
-          By continuing you agree to our community rules.
+          By continuing you agree to our{" "}
+          <Link href="/terms" className="underline hover:text-[var(--color-paper)]">
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="underline hover:text-[var(--color-paper)]">
+            Privacy Policy
+          </Link>
+          .
         </p>
       </div>
     </main>

@@ -241,13 +241,21 @@ export default function LandingPage() {
             © {new Date().getFullYear()} Once Was Yours · Working name ·
             Concept validation
           </p>
-          <Link
-            href="/feed"
-            className="text-sm font-semibold"
-            style={{ color: "var(--color-primary-2)" }}
-          >
-            Explore the feed →
-          </Link>
+          <nav className="flex items-center gap-4 text-sm">
+            <Link href="/terms" className="text-[var(--color-muted)] hover:text-[var(--color-paper)]">
+              Terms
+            </Link>
+            <Link href="/privacy" className="text-[var(--color-muted)] hover:text-[var(--color-paper)]">
+              Privacy
+            </Link>
+            <Link
+              href="/feed"
+              className="font-semibold"
+              style={{ color: "var(--color-primary-2)" }}
+            >
+              Explore the feed →
+            </Link>
+          </nav>
         </div>
       </footer>
     </main>
