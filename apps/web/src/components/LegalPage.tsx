@@ -7,7 +7,7 @@ import { Logo } from "@/components/Logo";
 // Impressum must name the natural person, so `legalName` is the person's full
 // name (business name is a trading name only).
 export const OPERATOR = {
-  legalName: "[Your full name]", // TODO: sole proprietor's full legal name (Vor- und Nachname)
+  legalName: "Nguenkam Charles", // sole proprietor's full legal name (Vor- und Nachname)
   tradingAs: "Gestiona Tech",
   street: "Nikolausstraße 6",
   city: "55120 Mainz",
@@ -76,6 +76,9 @@ export function LegalPage({
           </Link>
           <Link href="/impressum" className="text-[var(--color-muted)] hover:text-[var(--color-paper)]">
             Impressum
+          </Link>
+          <Link href="/withdrawal" className="text-[var(--color-muted)] hover:text-[var(--color-paper)]">
+            Withdrawal
           </Link>
           <span className="text-[var(--color-faint)]">
             © {new Date().getFullYear()} Once Was Yours
