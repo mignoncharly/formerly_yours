@@ -56,6 +56,41 @@ export async function updateProfile(input: {
   return { ok: true };
 }
 
+export type EmailPrefs = {
+  email_enabled: boolean;
+  email_offers: boolean;
+  email_sales: boolean;
+  email_messages: boolean;
+};
+
+/**
+ * Save transactional-email preferences. Upsert on the caller's own row; RLS +
+ * the WITH CHECK (auth.uid() = user_id) guarantee a user can only ever edit
+ * their own preferences.
+ */
+export async function updateEmailPrefs(input: EmailPrefs): Promise<ActionResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/sign-in?next=/account");
+
+  const { error } = await supabase.from("notification_preferences").upsert(
+    {
+      user_id: user.id,
+      email_enabled: Boolean(input.email_enabled),
+      email_offers: Boolean(input.email_offers),
+      email_sales: Boolean(input.email_sales),
+      email_messages: Boolean(input.email_messages),
+    },
+    { onConflict: "user_id" },
+  );
+  if (error) return { error: "Could not save your preferences. Please try again." };
+
+  revalidatePath("/account");
+  return { ok: true };
+}
+
 /** Reversible self-deactivation: hide the profile and sign out. */
 export async function deactivateAccount(): Promise<ActionResult> {
   const supabase = await createClient();

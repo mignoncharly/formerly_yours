@@ -1,0 +1,14 @@
+# Timer companion to oncewasyours-smoke.service. Every 15 minutes, a few seconds
+# jittered so it doesn't align with other timers. See the .service header for how
+# to install (optional — the live deployment uses cron).
+[Unit]
+Description=Run the Once Was Yours smoke monitor every 15 minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=15min
+RandomizedDelaySec=30
+Persistent=true
+
+[Install]
+WantedBy=timers.target

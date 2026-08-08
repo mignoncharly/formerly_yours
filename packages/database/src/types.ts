@@ -337,6 +337,69 @@ export type Database = {
         };
         Relationships: [];
       };
+      notification_preferences: {
+        Row: {
+          user_id: string;
+          email_enabled: boolean;
+          email_offers: boolean;
+          email_sales: boolean;
+          email_messages: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          email_enabled?: boolean;
+          email_offers?: boolean;
+          email_sales?: boolean;
+          email_messages?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          email_enabled?: boolean;
+          email_offers?: boolean;
+          email_sales?: boolean;
+          email_messages?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      email_deliveries: {
+        Row: {
+          id: string;
+          recipient_id: string | null;
+          to_address: string;
+          dedup_key: string;
+          subject: string | null;
+          provider: string | null;
+          status: string;
+          error: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          recipient_id?: string | null;
+          to_address: string;
+          dedup_key: string;
+          subject?: string | null;
+          provider?: string | null;
+          status?: string;
+          error?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          recipient_id?: string | null;
+          to_address?: string;
+          dedup_key?: string;
+          subject?: string | null;
+          provider?: string | null;
+          status?: string;
+          error?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       feature_flags: {
         Row: {
           key: string;

@@ -2,7 +2,11 @@ packages:
   - "apps/*"
   - "packages/*"
 
-# @sentry/cli's postinstall downloads a binary needed only for build-time
-# source-map upload (currently disabled). Don't run it.
+# Dependency install-script policy. pnpm blocks postinstall scripts by default;
+# list each dependency explicitly. @sentry/cli's binary download is only needed
+# for build-time source-map upload (currently disabled) → keep it false. esbuild
+# ships a prebuilt platform binary and its script just marks it executable →
+# needed by tsx, which runs the unit tests (pnpm test:unit).
 allowBuilds:
   "@sentry/cli": false
+  esbuild: true

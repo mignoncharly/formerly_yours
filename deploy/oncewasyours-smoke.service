@@ -1,0 +1,22 @@
+# Optional systemd unit for the production smoke monitor. The live deployment
+# uses a user crontab entry instead (this box has no passwordless sudo to install
+# system units, and no user-linger to keep --user timers alive). Install this
+# only if you later have root + want journald integration:
+#
+#   sudo cp deploy/oncewasyours-smoke.service /etc/systemd/system/
+#   sudo cp deploy/oncewasyours-smoke.timer   /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now oncewasyours-smoke.timer
+#   # ...then remove the smoke-monitor line from `crontab -e`.
+[Unit]
+Description=Once Was Yours — production smoke monitor
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=mignon
+WorkingDirectory=/home/mignon/apps/oncewasyours
+# flock guards against overlap even if a run overruns the timer interval.
+ExecStart=/usr/bin/flock -n /tmp/owy-smoke-monitor.lock /home/mignon/apps/oncewasyours/scripts/smoke-monitor.sh
+TimeoutStartSec=300
+Nice=10

@@ -3,7 +3,9 @@ import Link from "next/link";
 import { Card } from "@/components/ui";
 import { Logo } from "@/components/Logo";
 import { requireOnboarded, getSessionUser } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import { ProfileEditForm } from "./ProfileEditForm";
+import { EmailPrefsForm } from "./EmailPrefsForm";
 import { AccountDangerZone } from "./AccountDangerZone";
 
 export const metadata: Metadata = {
@@ -17,6 +19,19 @@ export default async function AccountPage() {
   const user = await getSessionUser();
 
   const deactivated = Boolean(profile.deactivated_at);
+
+  // Transactional-email preferences (opt-out model: absent row = all enabled).
+  const supabase = await createClient();
+  const { data: prefsRow } = await supabase
+    .from("notification_preferences")
+    .select("email_enabled, email_offers, email_sales, email_messages")
+    .maybeSingle();
+  const emailPrefs = {
+    email_enabled: prefsRow?.email_enabled ?? true,
+    email_offers: prefsRow?.email_offers ?? true,
+    email_sales: prefsRow?.email_sales ?? true,
+    email_messages: prefsRow?.email_messages ?? false,
+  };
 
   return (
     <main className="min-h-dvh px-5 py-10">
@@ -74,6 +89,11 @@ export default async function AccountPage() {
                   countryCode: profile.country_code ?? "",
                 }}
               />
+            </Card>
+
+            <Card className="p-5">
+              <h2 className="mb-4 text-[var(--color-paper)]">Email preferences</h2>
+              <EmailPrefsForm initial={emailPrefs} />
             </Card>
 
             <Card className="p-5">

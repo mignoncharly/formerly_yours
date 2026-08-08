@@ -47,18 +47,20 @@ export async function makeOffer(input: {
     .single();
   if (error || !data) return { ok: false, error: "Could not send the offer." };
 
-  // Transactional email (best-effort, no-op without RESEND_API_KEY). Offers are
-  // low-frequency + high-value, so they warrant email; chat does not.
-  void emailUser(
-    input.sellerId,
-    "You have a new offer — Once Was Yours",
-    emailShell(
+  // Transactional email (best-effort; gated on verified address + prefs, and
+  // deduped by dedupKey). Offers are low-frequency + high-value, so they warrant
+  // email; chat does not.
+  void emailUser(input.sellerId, {
+    category: "offers",
+    dedupKey: `offer_received:${data.id}`,
+    subject: "You have a new offer — Once Was Yours",
+    html: emailShell(
       "You have a new offer",
       "Someone just made an offer on one of your listings. Open Once Was Yours to accept, counter, or decline.",
       "View the offer",
       "/offers",
     ),
-  );
+  });
   return { ok: true, id: data.id };
 }
 
@@ -73,16 +75,17 @@ export async function acceptOffer(id: string): Promise<OfferResult> {
       .eq("id", id)
       .maybeSingle();
     if (offer?.buyer_id) {
-      void emailUser(
-        offer.buyer_id,
-        "Your offer was accepted — Once Was Yours",
-        emailShell(
+      void emailUser(offer.buyer_id, {
+        category: "offers",
+        dedupKey: `offer_accepted:${id}`,
+        subject: "Your offer was accepted — Once Was Yours",
+        html: emailShell(
           "Your offer was accepted",
           "Good news — the seller accepted your offer. Complete checkout to secure the item before someone else does.",
           "Go to your offers",
           "/offers",
         ),
-      );
+      });
     }
   }
   return result;

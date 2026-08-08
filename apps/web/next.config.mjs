@@ -13,6 +13,12 @@ const nextConfig = {
   output: "standalone",
   // The standalone tracer must include files from the monorepo root.
   outputFileTracingRoot: repoRoot,
+  // nodemailer is loaded via a runtime dynamic import (only when the SMTP email
+  // provider is selected), so the static tracer misses it. Force it into the
+  // standalone bundle so SMTP works regardless of where standalone is deployed.
+  outputFileTracingIncludes: {
+    "**": ["../../node_modules/.pnpm/nodemailer@*/node_modules/nodemailer/**"],
+  },
   reactStrictMode: true,
   // Workspace packages ship raw TypeScript; let Next transpile them.
   transpilePackages: ["@owy/types", "@owy/validation", "@owy/database"],

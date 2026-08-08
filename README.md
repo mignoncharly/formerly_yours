@@ -42,9 +42,12 @@ packages/
 supabase/
   migrations/           0001_extensions, 0002_enums (blueprint order)
   seed/ · functions/    seed data + Edge Functions (per phase)
-docs/                   phase-0, phase-1, deployment, brand-validation, planning/
-.github/workflows/      CI (install → typecheck → build)
+docs/                   phase-0, phase-1, deployment, email, monitoring, planning/
+scripts/                deploy, db-migrate, smoke-monitor, cleanup, sentry-notify
 ```
+
+> Scheduled work (production smoke monitor, retention cleanup) runs on the server
+> via cron — see `docs/monitoring.md`. There is no GitHub Actions CI.
 
 > `apps/admin` (back-office) and packages `ui` / `domain` / `analytics` are
 > introduced in the phases that need them; for now the design system and the
@@ -57,7 +60,10 @@ pnpm dev            # turbo: run all dev tasks
 pnpm build          # turbo: build all
 pnpm typecheck      # turbo: tsc --noEmit across packages
 pnpm web:dev        # just the web app
-pnpm db:push        # supabase db push (see supabase/README.md)
+pnpm test:unit      # node --test: pure unit tests (email adapter, …)
+pnpm test:security  # node --test: live RLS/authorization suite
+pnpm test:e2e       # playwright: production smoke suite
+pnpm db:migrate     # apply supabase/migrations/*.sql (see scripts/db-migrate.mjs)
 ```
 
 ## App routes (web)
