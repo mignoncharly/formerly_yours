@@ -17,13 +17,35 @@ Actions has been **removed** — the server is the single source of scheduled wo
 | ---------------- | --------------- | -------------------------------------------- | ------------------------- |
 | Smoke monitor    | every 15 min    | `scripts/smoke-monitor.sh`                   | `logs/smoke-monitor.log`  |
 | Retention cleanup| daily 03:40 UTC | `scripts/cleanup-cron.sh`                    | `logs/cleanup.log`        |
+| Stripe reconcile | daily 04:10 UTC | `scripts/stripe-reconcile-cron.sh`           | `logs/reconcile.log`      |
 
 Cron lines (already installed):
 
 ```cron
 */15 * * * * /usr/bin/flock -n /tmp/owy-smoke-monitor.lock /home/mignon/apps/oncewasyours/scripts/smoke-monitor.sh >> /home/mignon/apps/oncewasyours/logs/cron.log 2>&1
 40 3 * * *   /usr/bin/flock -n /tmp/owy-cleanup.lock       /home/mignon/apps/oncewasyours/scripts/cleanup-cron.sh   >> /home/mignon/apps/oncewasyours/logs/cleanup.log 2>&1
+10 4 * * *   /usr/bin/flock -n /tmp/owy-reconcile.lock     /home/mignon/apps/oncewasyours/scripts/stripe-reconcile-cron.sh >> /home/mignon/apps/oncewasyours/logs/reconcile.log 2>&1
 ```
+
+## Stripe reconciliation (missed-webhook detector)
+
+`scripts/stripe-reconcile.mjs` pulls every Stripe checkout session Stripe marks
+**paid** in the last `OWY_RECON_HOURS` (default 48) and cross-checks each against
+`private.payments.status` + `orders.status`. A session Stripe considers paid that
+we haven't recorded as `succeeded`/`paid` means the **webhook was missed** — real
+money not reflected in the app. Read-only; it never mutates state.
+
+- **Exit:** 0 = all reconciled, 2 = mismatch(es) found, 1 = run error.
+- **Alerts:** mismatches and run errors raise a Sentry event (`sentry-notify.mjs`).
+- **Manual run:** `node scripts/stripe-reconcile.mjs` (or `./scripts/stripe-reconcile-cron.sh`).
+
+## Production readiness self-check (on demand)
+
+`node scripts/readiness-check.mjs [base-url]` — a read-only go/no-go report:
+domain + TLS, all four legal pages (and unfilled-placeholder scan), required env,
+Stripe mode + a live webhook endpoint at the domain, email provider, and the
+sending domain's SPF/DMARC/DKIM. Prints ✓/⚠/✗ and exits non-zero on any blocker.
+Run it before promoting the site or after any config change.
 
 ## Smoke monitor (synthetic uptime)
 
