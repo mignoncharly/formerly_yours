@@ -87,10 +87,12 @@ domain we already authenticate with Zoho, is transactional-by-policy, and costs
 essentially nothing at our volume — while giving us webhooks and templates if we
 grow. No code change is needed: point the SMTP env at ZeptoMail.
 
-> Not wired in production yet — **no email credentials are configured on the
-> server** (`RESEND_API_KEY` / `SMTP_*` are unset), so the app currently runs the
-> **noop** provider: in-app notifications work, email is silently skipped. This
-> is the one manual step remaining to turn on email (see below).
+> **LIVE (2026-08-08):** wired to **Zoho ZeptoMail over SMTP** in production
+> (`smtp.zeptomail.eu:587`, from `notifications@gestionatech.de`). Verified: SMTP
+> auth + a real test send were accepted (`250 Message received`) and delivered.
+> To change or disable, edit the `SMTP_*` / `OWY_EMAIL_PROVIDER` block in
+> `apps/web/.env.local` and restart. Credentials live only in that git-ignored
+> file — never in the repo.
 
 ## Production setup
 
