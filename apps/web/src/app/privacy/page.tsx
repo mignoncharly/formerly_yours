@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LegalPage, Section, P, List, ReviewNotice } from "@/components/LegalPage";
+import { LegalPage, Section, P, List, ReviewNotice, operatorLine, operatorAddress, OPERATOR } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -14,11 +14,11 @@ export default function PrivacyPage() {
       intro={
         <P>
           This policy explains what personal data Once Was Yours collects, why,
-          and your rights under the EU/UK General Data Protection Regulation
-          (GDPR). The data controller is [Legal entity name], [registered
-          address] (“we”). For any privacy request, contact{" "}
-          <a className="text-[var(--color-primary-2)]" href="mailto:privacy@gestionatech.de">
-            privacy@gestionatech.de
+          and your rights under the EU General Data Protection Regulation (GDPR).
+          The data controller is {operatorLine()}, {operatorAddress()} (“we”). For
+          any privacy request, contact{" "}
+          <a className="text-[var(--color-primary-2)]" href={`mailto:${OPERATOR.privacyEmail}`}>
+            {OPERATOR.privacyEmail}
           </a>
           .
         </P>

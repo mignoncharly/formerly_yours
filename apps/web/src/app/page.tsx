@@ -248,6 +248,9 @@ export default function LandingPage() {
             <Link href="/privacy" className="text-[var(--color-muted)] hover:text-[var(--color-paper)]">
               Privacy
             </Link>
+            <Link href="/impressum" className="text-[var(--color-muted)] hover:text-[var(--color-paper)]">
+              Impressum
+            </Link>
             <Link
               href="/feed"
               className="font-semibold"

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LegalPage, Section, P, List, ReviewNotice } from "@/components/LegalPage";
+import { LegalPage, Section, P, List, ReviewNotice, operatorLine, operatorAddress, OPERATOR } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -14,8 +14,8 @@ export default function TermsPage() {
       intro={
         <P>
           These Terms govern your use of Once Was Yours (the “Service”), operated
-          by [Legal entity name], [registered address] (“we”, “us”). By creating
-          an account or using the Service you agree to these Terms. If you do not
+          by {operatorLine()}, {operatorAddress()} (“we”, “us”). By creating an
+          account or using the Service you agree to these Terms. If you do not
           agree, do not use the Service.
         </P>
       }
@@ -136,10 +136,14 @@ export default function TermsPage() {
         <P>
           We may update these Terms; material changes will be notified in-app or
           by email, and continued use means acceptance. These Terms are governed
-          by the laws of [country/jurisdiction], without prejudice to mandatory
+          by the laws of {OPERATOR.jurisdiction}, without prejudice to mandatory
           consumer protections in your country of residence. Questions:{" "}
-          <a className="text-[var(--color-primary-2)]" href="mailto:legal@gestionatech.de">
-            legal@gestionatech.de
+          <a className="text-[var(--color-primary-2)]" href={`mailto:${OPERATOR.contactEmail}`}>
+            {OPERATOR.contactEmail}
+          </a>
+          . See also our{" "}
+          <a className="text-[var(--color-primary-2)]" href="/impressum">
+            Impressum
           </a>
           .
         </P>

@@ -2,6 +2,33 @@ import * as React from "react";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 
+// Single source of truth for the operator's legal identity, referenced by
+// /terms, /privacy, and /impressum. Sole proprietor (Einzelunternehmen) — the
+// Impressum must name the natural person, so `legalName` is the person's full
+// name (business name is a trading name only).
+export const OPERATOR = {
+  legalName: "[Your full name]", // TODO: sole proprietor's full legal name (Vor- und Nachname)
+  tradingAs: "Gestiona Tech",
+  street: "Nikolausstraße 6",
+  city: "55120 Mainz",
+  country: "Germany",
+  taxNumber: "26/122/60069", // Steuernummer
+  vatId: "DE455342848", // USt-IdNr.
+  contactEmail: "legal@gestionatech.de",
+  privacyEmail: "privacy@gestionatech.de",
+  jurisdiction: "Germany",
+};
+
+/** "Name, trading as X" — the operator line used across the legal pages. */
+export function operatorLine(): string {
+  return `${OPERATOR.legalName}, trading as “${OPERATOR.tradingAs}”`;
+}
+
+/** "Street, City, Country" one-line address. */
+export function operatorAddress(): string {
+  return `${OPERATOR.street}, ${OPERATOR.city}, ${OPERATOR.country}`;
+}
+
 // Shared shell for /terms and /privacy: branded header, readable prose column,
 // and a footer with cross-links. Content is passed as children built from the
 // small typographic helpers exported below.
@@ -47,6 +74,9 @@ export function LegalPage({
           <Link href="/privacy" className="text-[var(--color-muted)] hover:text-[var(--color-paper)]">
             Privacy Policy
           </Link>
+          <Link href="/impressum" className="text-[var(--color-muted)] hover:text-[var(--color-paper)]">
+            Impressum
+          </Link>
           <span className="text-[var(--color-faint)]">
             © {new Date().getFullYear()} Once Was Yours
           </span>
@@ -81,15 +111,16 @@ export function List({ items }: { items: React.ReactNode[] }) {
   );
 }
 
-// Prominent "operator must fill this in / get legal review" callout.
+// Standing disclaimer. Shown only while a required detail is still a placeholder
+// (i.e. the operator's full legal name). Once OPERATOR.legalName is filled in,
+// this renders nothing.
 export function ReviewNotice() {
+  if (!OPERATOR.legalName.startsWith("[")) return null;
   return (
     <div className="rounded-xl border border-[color-mix(in_oklab,#e9c46a_45%,var(--color-line))] bg-[color-mix(in_oklab,#e9c46a_10%,transparent)] px-4 py-3 text-sm text-[var(--color-paper)]">
-      <strong>Operator note (remove before public launch):</strong> this document
-      is a good-faith starting template, not legal advice. Replace every{" "}
-      <code className="text-[var(--color-primary-2)]">[bracketed]</code> placeholder
-      with your real details and have a qualified lawyer review it for your
-      jurisdiction before relying on it.
+      <strong>Draft — pending one detail:</strong> the operator&rsquo;s full legal
+      name still needs to be filled in before public launch. This document is a
+      good-faith template; have a qualified lawyer confirm it fits your business.
     </div>
   );
 }

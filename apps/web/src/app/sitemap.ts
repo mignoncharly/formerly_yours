@@ -49,6 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${APP_URL}/hall-of-fame`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
     { url: `${APP_URL}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
     { url: `${APP_URL}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${APP_URL}/impressum`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
   ];
 
   for (const c of cats ?? []) {
